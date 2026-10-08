@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<!--
+MIT License
+
+Copyright (c) 2026 David Darts
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>G-Code-Inator</title>
+<meta name="description" content="Convert SVG drawings into G-code for drag knife cutting and pen plotting, with blade offset compensation and multi-color pen changes.">
+<meta property="og:title" content="G-Code-Inator">
+<meta property="og:description" content="Convert SVG drawings into G-code for drag knife cutting and pen plotting, with blade offset compensation and multi-color pen changes.">
+<meta name="theme-color" content="#2E6A4F">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232E6A4F'/%3E%3Cpath d='M15 47V19h17v26h17V17' fill='none' stroke='%23F7F5EC' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='49' cy='17' r='6.5' fill='%23F2C230'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EDEA; --panel:#FFFFFF; --ink:#1E2522; --muted:#5A6560; --line:#CAD3CE;
+  --accent:#2E6A4F; --accent-ink:#FFFFFF; --warn-bg:#FFF4D6; --warn-ink:#6B4E00;
+  --mat:#2E6A4F; --mat-minor:rgba(255,255,255,.07); --mat-major:rgba(255,255,255,.2);
+  --tip:#F7F5EC; --holder:#F2C230; --travel:rgba(255,255,255,.35); --mark:#9FD4B8;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#131816; --panel:#1C2320; --ink:#E4EBE7; --muted:#9AA8A1; --line:#2E3934;
+    --accent:#4C9A74; --accent-ink:#0E1311; --warn-bg:#3A3015; --warn-ink:#F2D58A;
+    --mat:#1F4A37;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#131816; --panel:#1C2320; --ink:#E4EBE7; --muted:#9AA8A1; --line:#2E3934;
+  --accent:#4C9A74; --accent-ink:#0E1311; --warn-bg:#3A3015; --warn-ink:#F2D58A;
+  --mat:#1F4A37;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Barlow,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.45}
+header{padding:20px 24px 8px;max-width:1400px;margin:0 auto}
+h1{font-size:1.75rem;font-weight:700;margin:0;letter-spacing:-.01em}
+header p{margin:2px 0 0;color:var(--muted)}
+body[data-mode="pen"] .knife-only{display:none!important}
+body[data-mode="knife"] .pen-only{display:none!important}
+.modesw{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.modesw button{border:0;border-radius:0;background:transparent;color:var(--ink);padding:8px 16px}
+.modesw button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.topr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header p.tagline{margin:2px 0 0;color:var(--muted);font-size:.98rem}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.wrap{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:20px;padding:12px 24px 32px;max-width:1400px;margin:0 auto;align-items:start}
+@media (max-width:860px){.wrap{grid-template-columns:1fr;padding:12px 14px 28px}header{padding:16px 14px 4px}}
+aside{display:flex;flex-direction:column;gap:14px}
+section.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+h2{font-size:1.05rem;font-weight:600;margin:0 0 10px}
+.row{display:grid;grid-template-columns:1fr 110px;gap:4px 12px;align-items:center;margin:8px 0}
+.row label{font-weight:500}
+.hint{grid-column:1/-1;color:var(--muted);font-size:.86rem;margin-top:-2px}
+input[type=number],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%}
+input[type=number]{text-align:right}
+textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;min-height:72px;resize:vertical}
+.check{display:grid;grid-template-columns:22px 1fr;gap:2px 8px;margin:10px 0;align-items:start}
+.check input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
+.check label{font-weight:500}
+.check .hint{grid-column:2}
+.btns{display:flex;gap:8px;flex-wrap:wrap}
+button,.filebtn{font:inherit;font-weight:600;border-radius:7px;padding:8px 14px;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink)}
+button.ghost,.filebtn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--holder);outline-offset:2px}
+.filebtn input{display:none}
+.subh{font-size:.95rem;font-weight:600;margin:14px 0 2px}
+.penlist{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.penlist li{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.penlist .num{width:18px;color:var(--muted);font-variant-numeric:tabular-nums}
+.penlist .sw{width:18px;height:18px;border-radius:50%;border:1px solid var(--line);flex:none}
+.penlist .nm{flex:1}
+.penlist button{padding:2px 8px;font-size:.9rem;line-height:1.4}
+.iconbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 10px}
+.iconbtn svg{display:block}
+#resetmsg:empty{display:none}
+dialog#about{max-width:520px;width:calc(100% - 32px);border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--ink);padding:18px 22px 20px}
+dialog#about::backdrop{background:rgba(0,0,0,.45)}
+dialog#about p{margin:8px 0}
+dialog#about h3{font-size:1rem;font-weight:600;margin:16px 0 4px}
+dialog#about ol{margin:4px 0 8px;padding-left:22px}
+dialog#about li{margin:4px 0}
+.dlg-list{margin:6px 0 8px;padding-left:20px}
+.dlg-list li{margin:5px 0}
+dialog#about{max-height:calc(100vh - 32px);overflow:auto}
+.dlg-head{display:flex;justify-content:space-between;align-items:center}
+.dlg-head h2{margin:0}
+.dlg-foot{margin:18px 0 0;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem}
+#svghost{position:absolute;left:-20000px;top:0;width:10px;height:10px;overflow:hidden;opacity:0;pointer-events:none}
+.status:empty{display:none}
+.status{margin-top:8px;color:var(--muted);font-size:.9rem}
+.off{opacity:.45}
+.off input{pointer-events:none}
+main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.matbox{background:var(--mat);border-radius:12px;padding:10px;position:relative}
+canvas{display:block;width:100%;height:min(62vh,620px);border-radius:6px}
+@media (max-width:860px){canvas{height:52vh}}
+.animbar{display:flex;align-items:center;gap:10px;padding:8px 4px 0;color:#E8F1EC;font-size:.88rem}
+.abtn svg{pointer-events:none}
+.abtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border-radius:50%;background:#F7F5EC;border-color:#F7F5EC;color:#1E2522;flex:none}
+.scrubwrap{position:relative;flex:1;min-width:60px;display:flex;align-items:center}
+.animbar input[type=range]{width:100%;margin:0;accent-color:#F2C230}
+#amarks{position:absolute;left:8px;right:8px;top:0;bottom:0;pointer-events:none}
+.amark{position:absolute;top:2px;bottom:2px;width:10px;margin-left:-5px;padding:0;border:0;background:transparent;pointer-events:auto;cursor:pointer}
+.amark::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:4px;border-radius:2px;background:var(--c);box-shadow:0 0 0 1.5px #F7F5EC}
+.animbar select{width:auto;background:rgba(0,0,0,.2);color:#E8F1EC;border-color:rgba(255,255,255,.25);padding:4px 6px}
+#atime{font-variant-numeric:tabular-nums;white-space:nowrap}
+.legend{display:flex;gap:16px;flex-wrap:wrap;color:#E8F1EC;font-size:.88rem;padding:8px 4px 2px}
+.legend > span::before{content:"";display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px;background:var(--c)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:10px}
+.stats div{display:flex;flex-direction:column}
+.stats b{font-size:1.25rem;font-weight:600}
+.stats small{color:var(--muted)}
+.copies{margin:6px 0 12px;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+.copies li{border:1px solid var(--line);border-radius:6px;padding:3px 9px;font-size:.92rem}
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:7px;padding:8px 12px;margin:8px 0;font-size:.92rem}
+details{margin-top:10px}
+section.box > details{margin-top:0}
+.h2sum{font-size:1.05rem;font-weight:600}
+.calbody{margin-top:10px}
+summary{cursor:pointer;font-weight:600}
+details textarea{min-height:240px;margin-top:8px}
+.steps{margin:6px 0 0;padding-left:20px}
+.steps li{margin:4px 0}
+.substeps{margin:4px 0 0;padding-left:18px}
+body:not(.multipen) .multi-only{display:none}
+.empty{color:#E8F1EC;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;pointer-events:none;font-size:1.05rem}
+</style>
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>G-Code-Inator</h1>
+    <p class="tagline">SVG in, G-code out. Drag knife cutting and pen plotting for most hobby CNC machines.</p>
+  </div>
+  <div class="topr">
+    <div class="modesw" role="group" aria-label="Tool">
+      <button type="button" id="m-knife" aria-pressed="true">Drag knife</button>
+      <button type="button" id="m-pen" aria-pressed="false">Pen</button>
+    </div>
+    <button class="ghost iconbtn" id="reset" type="button" aria-label="Reset settings" title="Reset settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5"/></svg><span id="resetmsg"></span></button>
+    <button class="ghost" id="aboutbtn" type="button" aria-haspopup="dialog">About</button>
+  </div>
+</header>
+<div class="wrap">
+<aside>
+  <section class="box">
+    <h2>Design</h2>
+    <div class="btns">
+      <label class="filebtn">Open SVG<input type="file" id="file" accept=".svg,image/svg+xml"></label>
+    </div>
+    <div class="status" id="loaded"></div>
+    <div class="check"><input type="checkbox" id="mirror"><label for="mirror">Flip horizontal</label></div>
+    <div class="row"><label for="margin">Space before design (mm)</label><input type="number" id="margin" step="0.5" min="0">
+      <div class="hint">Gap between your zero point and the design.</div></div>
+  </section>
+
+  <section class="box">
+    <h2><span class="knife-only">Knife</span><span class="pen-only">Pen</span></h2>
+    <div class="row knife-only" id="r-offset"><label for="offset">Blade offset (mm)</label><input type="number" id="offset" step="0.01" min="0">
+      <div class="hint">Distance the blade tip trails behind the holder center.</div></div>
+    <div class="row knife-only" id="r-overcut"><label for="overcut">Overcut (mm)</label><input type="number" id="overcut" step="0.1" min="0">
+      <div class="hint">Extra cut past the start so closed shapes fully meet.</div></div>
+    <div class="row" id="r-depth"><label for="depth"><span class="knife-only">Cut depth (mm)</span><span class="pen-only">Pen down depth (mm)</span></label><input type="number" id="depth" step="0.05" min="0.01">
+      <div class="hint"><span class="knife-only">How far below Z zero the holder goes. Zero Z with the blade tip just touching the material.</span><span class="pen-only">Sets the pen pressure. Zero Z with the tip touching the paper; going lower presses harder.</span></div></div>
+    <div class="row knife-only"><label for="passes">Passes</label><input type="number" id="passes" step="1" min="1" max="5">
+      <div class="hint">Cuts each shape this many times before moving to the next. A lighter first pass helps keep corners sharp.</div></div>
+    <div class="row knife-only" id="r-pextra"><label for="pextra">Extra depth per pass (mm)</label><input type="number" id="pextra" step="0.05" min="0">
+      <div class="hint">Each pass goes this much deeper than the one before. Selecting 0 will cut again at the current depth.</div></div>
+    <div class="check knife-only"><input type="checkbox" id="precut"><label for="precut">Alignment cut at job start</label>
+      <div class="hint">Cuts a 4mm line near zero to align the blade direction.</div></div>
+    <div class="check knife-only"><input type="checkbox" id="startlong"><label for="startlong">Start shapes on their longest edge</label>
+      <div class="hint">Puts the start/end join on a straight line instead of a corner.</div></div>
+    <div class="check knife-only"><input type="checkbox" id="innerfirst"><label for="innerfirst">Cut inner shapes first</label></div>
+    <div class="check pen-only"><input type="checkbox" id="optimize"><label for="optimize">Shorter travel</label>
+      <div class="hint">Reorders the lines to reduce the moves between them.</div></div>
+    <div class="pen-only" id="penbox" hidden>
+      <h3 class="subh">Pen order</h3>
+      <div class="hint">The machine pauses for a pen change between colors.</div>
+      <ol class="penlist" id="penlist"></ol>
+    </div>
+  </section>
+
+  <section class="box">
+    <h2>Speeds and heights</h2>
+    <div class="row" id="r-feed"><label for="feed"><span class="knife-only">Cut speed (mm/s)</span><span class="pen-only">Draw speed (mm/s)</span></label><input type="number" id="feed" step="1" min="1"></div>
+    <div class="row"><label for="plunge">Plunge speed (mm/s)</label><input type="number" id="plunge" step="1" min="1"></div>
+    <div class="row"><label for="safez"><span class="knife-only">Travel height (mm)</span><span class="pen-only">Pen up height (mm)</span></label><input type="number" id="safez" step="0.5" min="0.5"></div>
+  </section>
+
+  <section class="box knife-only">
+    <details id="calib"><summary class="h2sum">Calibration</summary>
+    <div class="calbody">
+    <div class="btns"><button class="ghost" id="testbtn" type="button">Load test shapes</button></div>
+    <div class="row" style="grid-template-columns:1fr 180px"><label for="vary">Setting to test</label>
+      <select id="vary"></select></div>
+    <div id="testfields">
+      <div class="row"><label for="vstart">Start at</label><input type="number" id="vstart" step="0.01" min="0"></div>
+      <div class="row"><label for="vstep">Increase by</label><input type="number" id="vstep" step="0.01" min="0"></div>
+      <div class="row"><label for="vcount">Number of test cuts</label><input type="number" id="vcount" step="1" min="1" max="12"></div>
+      <div class="row"><label for="gap">Space between test cuts (mm)</label><input type="number" id="gap" step="1" min="0"></div>
+    </div>
+    </div></details>
+  </section>
+
+  <section class="box">
+    <details>
+      <summary>Start and end G-code</summary>
+      <div class="row" style="grid-template-columns:1fr"><label for="gstart">Start</label><textarea id="gstart"></textarea></div>
+      <div class="row" style="grid-template-columns:1fr"><label for="gend">End</label><textarea id="gend"></textarea></div>
+    </details>
+  </section>
+</aside>
+
+<main>
+  <div class="matbox">
+    <canvas id="cv" aria-label="Cut preview"></canvas>
+    <div class="empty" id="empty"></div>
+    <div class="animbar">
+      <button type="button" id="aplay" class="abtn" aria-label="Play" disabled><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg></button>
+      <div class="scrubwrap"><input type="range" id="ascrub" min="0" max="1000" step="1" value="0" aria-label="Position in job" disabled><div id="amarks"></div></div>
+      <span id="atime">0:00 / 0:00</span>
+      <select id="aspeed" aria-label="Playback speed"><option value="1">1×</option><option value="2">2×</option><option value="5" selected>5×</option><option value="10">10×</option><option value="25">25×</option></select>
+    </div>
+    <div class="legend">
+      <span id="leg-line" style="--c:var(--tip)"><span class="knife-only">Blade tip</span><span class="pen-only">Pen line</span></span>
+      <span class="knife-only" style="--c:var(--holder)">Holder center</span>
+      <span style="--c:var(--travel)">Travel</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="stats" id="stats"></div>
+    <ul class="copies" id="copies"></ul>
+    <div id="warns"></div>
+    <div class="btns">
+      <button id="save" type="button" disabled>Save G-code</button>
+    </div>
+    <div class="status" id="savestatus"></div>
+    <details id="directions" open>
+      <summary>Directions</summary>
+      <ol class="steps">
+        <li>Home the machine.</li>
+        <li class="knife-only">Lay down the material. Jog to the lower left corner of where you want to cut. Zero X and Y.</li>
+        <li class="pen-only">Fix the paper down. Jog to the lower left corner of where you want to draw. Zero X and Y.</li>
+        <li class="knife-only">Lower Z until the blade tip just touches the material. Zero Z.</li>
+        <li class="pen-only">Insert the first pen<span class="multi-only"> in Pen order</span> and lower Z until it just touches the paper. Zero Z.</li>
+        <li>Upload the file to your controller and run it.</li>
+        <li class="pen-only">Pen changes. The machine lifts, moves to your zero corner and pauses:
+          <ul class="substeps">
+            <li><b>"Remove pen":</b> take the pen out and press Resume. The machine lowers to paper height and pauses again.</li>
+            <li><b>"Insert pen":</b> slide the next pen down until it touches the paper, tighten it and press Resume. Drawing continues.</li>
+          </ul>
+        </li>
+      </ol>
+    </details>
+    <details>
+      <summary>View G-code</summary>
+      <textarea id="out" readonly></textarea>
+    </details>
+  </div>
+</main>
+</div>
+
+<dialog id="about" aria-labelledby="about-h">
+  <div class="dlg-head"><h2 id="about-h">About</h2><button class="ghost" id="aboutclose" type="button" aria-label="Close">Close</button></div>
+  <p>G-Code-Inator converts SVG drawings into G-code for drag knife cutting and pen plotting. The generated files are designed to work with GRBL, FluidNC, grblHAL and most other hobby CNC controllers.</p>
+  <h3>Drag knife</h3>
+  <p>A drag knife works like a shopping cart caster wheel, trailing behind its central pivot so the cutting tip lags behind the machine head. Unadjusted toolpaths force this trailing tip to round off sharp corners and leave gaps where cuts close. This converter translates SVG vectors into G-code with automatic swivel loops and overcut extensions, producing sharp corners and clean, complete cutouts.</p>
+  <h3>Pen</h3>
+  <p>Converts SVG vectors into G-code for pen plotting, with full support for multi-color drawings. Paths are grouped and plotted sequentially by stroke color, with automated pauses for swapping pens between colors. At each pen change, the machine lowers to paper height so the new pen can be seated without re-zeroing Z.</p>
+  <h3>Preparing an SVG</h3>
+  <p>Convert everything (shapes, text, etc.) to paths before saving. Only outlines are used: fills, line thickness and hidden layers are ignored.</p>
+  <p class="dlg-foot">Vibe coded by David Darts · MIT License © 2026</p>
+</dialog>
+<div id="svghost" aria-hidden="true"></div>
+<script>
+// ===== Core geometry =====
+function dist(a,b){return Math.hypot(b[0]-a[0],b[1]-a[1]);}
+
+function cleanPaths(raw, colors){
+  const out=[];
+  for(let ri=0;ri<raw.length;ri++){ const p=raw[ri];
+    const pts=[];
+    for(const q of p){ if(!pts.length || dist(pts[pts.length-1],q)>1e-4) pts.push([q[0],q[1]]); }
+    if(pts.length<2) continue;
+    let closed=false;
+    if(pts.length>=3 && dist(pts[0],pts[pts.length-1])<0.05){
+      closed=true; pts[pts.length-1]=[pts[0][0],pts[0][1]];
+      if(pts.length<4) continue;
+    }
+    out.push(colors?{pts,closed,color:colors[ri]}:{pts,closed});
+  }
+  return out;
+}
+
+function testShapes(){
+  const sq=[[0,0],[15,0],[15,15],[0,15],[0,0]];
+  const tri=[[19,0],[27,0],[23,15],[19,0]];            // ~30 degree tip
+  const bar=[[31,0],[41,0],[41,2.5],[31,2.5],[31,0]];   // short horizontals
+  const small=[[31,6],[35,6],[35,8.5],[31,8.5],[31,6]];
+  return [sq,tri,bar,small].map(pts=>({pts,closed:true}));
+}
+
+function bbox(paths){
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;
+  for(const p of paths) for(const q of p.pts){ if(q[0]<x0)x0=q[0]; if(q[1]<y0)y0=q[1]; if(q[0]>x1)x1=q[0]; if(q[1]>y1)y1=q[1]; }
+  return {x0,y0,x1,y1,w:x1-x0,h:y1-y0};
+}
+
+function rotateClosed(pts){
+  const n=pts.length-1; let best=0, bl=-1;
+  for(let i=0;i<n;i++){ const l=dist(pts[i],pts[i+1]); if(l>bl){bl=l;best=i;} }
+  const a=pts[best], b=pts[best+1], m=[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  const res=[m];
+  for(let i=best+1;i<=n;i++) res.push(pts[i]);
+  for(let i=1;i<=best;i++) res.push(pts[i]);
+  res.push(m);
+  return res;
+}
+
+function addOvercut(pts,L){
+  if(!(L>0)) return pts;
+  const res=pts.slice(); let rem=L;
+  for(let i=0;i<pts.length-1 && rem>1e-9;i++){
+    const a=pts[i], b=pts[i+1], l=dist(a,b);
+    if(l<1e-9) continue;
+    if(l>=rem){ res.push([a[0]+(b[0]-a[0])*rem/l, a[1]+(b[1]-a[1])*rem/l]); rem=0; }
+    else { res.push(b); rem-=l; }
+  }
+  return res;
+}
+
+// Builds holder-center moves so the trailing blade tip follows pts.
+function compensate(pts, prm, lastDir, opt, zsteps){
+  const r=prm.offset, moves=[];
+  const segs=[];
+  for(let i=0;i<pts.length-1;i++){
+    const a=pts[i], b=pts[i+1], l=dist(a,b);
+    if(l<1e-6) continue;
+    segs.push({a,b,bi:i+1,d:[(b[0]-a[0])/l,(b[1]-a[1])/l]});
+  }
+  if(!segs.length) return {moves,lastDir};
+  const down={t:'down',z:-prm.depth,r:r}, up={t:'up'};
+  const at=(P,d)=>[P[0]+r*d[0],P[1]+r*d[1]];
+  const turn=(P,d1,d2)=>{
+    const delta=Math.atan2(d1[0]*d2[1]-d1[1]*d2[0], d1[0]*d2[0]+d1[1]*d2[1]);
+    const e=at(P,d2);
+    if(Math.abs(delta)<opt.threshRad || r<=0) moves.push({t:'line',x:e[0],y:e[1],f:prm.feed});
+    else moves.push({t:'arc',x:e[0],y:e[1],i:-r*d1[0],j:-r*d1[1],cw:delta<0,cx:P[0],cy:P[1],r,
+                     a0:Math.atan2(d1[1],d1[0]),delta,f:prm.feed});
+  };
+  const s0=segs[0];
+  if(r>0 && opt.preswivel && lastDir){
+    const st=at(s0.a,lastDir);
+    moves.push({t:'travel',x:st[0],y:st[1]}); moves.push(down);
+    turn(s0.a,lastDir,s0.d);
+  } else {
+    const st=at(s0.a,s0.d);
+    moves.push({t:'travel',x:st[0],y:st[1]}); moves.push(down);
+  }
+  segs.forEach((s,k)=>{
+    const e=at(s.b,s.d);
+    moves.push({t:'line',x:e[0],y:e[1],f:prm.feed});
+    if(zsteps && zsteps[s.bi]!==undefined) moves.push({t:'plunge',z:-zsteps[s.bi]});
+    if(k<segs.length-1) turn(s.b,s.d,segs[k+1].d);
+  });
+  moves.push(up);
+  return {moves,lastDir:segs[segs.length-1].d};
+}
+
+// Full job: returns moves, tip paths for the preview, and test-cut info.
+function buildJob(base, s){
+  const out={moves:[],tips:[],copies:[],warnings:[]};
+  if(!base || !base.length) return out;
+  let paths=base.map(p=>({pts:p.pts.map(q=>[s.mirror?-q[0]:q[0], q[1]]),closed:p.closed,color:p.color}));
+  const bb=bbox(paths);
+  paths=paths.map(p=>({pts:p.pts.map(q=>[q[0]-bb.x0+s.margin,q[1]-bb.y0+s.margin]),closed:p.closed,color:p.color}));
+  const w=bb.w, h=bb.h;
+  const opt={threshRad:s.thresh*Math.PI/180, preswivel:s.preswivel};
+  let lastDir=null;
+  if(s.precut){
+    const pc=[[0,1],[4,1]];
+    out.tips.push({pts:pc,kind:'precut'});
+    const prm={offset:0,depth:s.depth,feed:s.feed};
+    const r=compensate(pc,prm,null,opt);
+    out.moves.push(...r.moves); lastDir=[1,0];
+    if(s.margin>=0 && s.margin<3) out.warnings.push('Space before design is under 3mm, so the alignment cut may hit the design.');
+  }
+  const n = s.vary==='none' ? 1 : Math.max(1,Math.min(12,Math.round(s.vcount)));
+  for(let k=0;k<n;k++){
+    const prm={offset:s.offset,overcut:s.overcut,depth:s.depth,feed:s.feed};
+    let val=null;
+    if(s.vary!=='none'){ val=+(s.vstart+k*s.vstep).toFixed(4); prm[s.vary]=val; }
+    if(!(prm.offset>=0)||!(prm.overcut>=0)||!(prm.depth>0)||!(prm.feed>0)){
+      const NM={offset:'blade offset',depth:'cut depth',overcut:'overcut',feed:'cut speed'};
+      if(s.vary!=='none') out.warnings.push('Test cut '+(k+1)+' was skipped: a '+(NM[s.vary]||s.vary)+' of '+val+' isn\u2019t usable. Adjust Start at or Increase by.');
+      out.copies.push({k,val,prm,bad:true}); continue;
+    }
+    const dx=k*(w+s.gap);
+    const cp={k,val,prm,x0:s.margin+dx,x1:s.margin+dx+w,y0:s.margin,y1:s.margin+h};
+    out.copies.push(cp);
+    const allShapes=paths.map(p=>({pts:p.pts.map(q=>[q[0]+dx,q[1]]),closed:p.closed,color:p.color}));
+    const pm=s.penMap||{};
+    const groups=(s.pens&&s.pens.length>1)?s.pens.map(c=>({c,g:allShapes.filter(p=>(pm[p.color]||p.color)===c)})).filter(o=>o.g.length):[{c:null,g:allShapes}];
+    for(let gi=0;gi<groups.length;gi++){
+    if(gi>0) out.moves.push({t:'toolchange',x:0,y:0,from:groups[gi-1].c,to:groups[gi].c});
+    let shapes=groups[gi].g;
+    if(s.innerfirst) shapes=orderInnerFirst(shapes, lastPos(out.moves), s.startlong);
+    if(s.optimize) shapes=orderNearest(shapes, lastPos(out.moves));
+    const list=shapes;
+    for(const p of list){
+      let pts=p.pts;
+      const np=Math.max(1,Math.min(5,Math.round(s.passes||1)));
+      const extra=s.pextra>0?s.pextra:0;
+      if(p.closed && np>1){
+        // Closed shape, several passes: go round again without lifting, stepping down where each pass starts.
+        if(s.startlong) pts=rotateClosed(pts);
+        let full=pts.slice(); const zsteps={};
+        for(let pass=1;pass<np;pass++){
+          if(extra>0) zsteps[full.length-1]=prm.depth+pass*extra;
+          full=full.concat(pts.slice(1));
+        }
+        full=addOvercut(full,prm.overcut);
+        out.tips.push({pts:addOvercut(pts,prm.overcut),kind:'cut',color:p.color});
+        const r=compensate(full,prm,lastDir,opt,zsteps);
+        out.moves.push(...r.moves); lastDir=r.lastDir;
+        continue;
+      }
+      if(p.closed){ if(s.startlong) pts=rotateClosed(pts); pts=addOvercut(pts,prm.overcut); }
+      out.tips.push({pts,kind:'cut',color:(s.penMap&&s.penMap[p.color])||p.color});
+      for(let pass=0;pass<np;pass++){
+        const pp={...prm,depth:prm.depth+pass*(s.pextra>0?s.pextra:0)};
+        const r=compensate(pts,pp,lastDir,opt);
+        for(const mv of r.moves) if(mv.t==='down') mv.c=(s.penMap&&s.penMap[p.color])||p.color;
+        out.moves.push(...r.moves); lastDir=r.lastDir;
+      }
+    }
+    }
+  }
+  return out;
+}
+
+function pointInPoly(pt,poly){
+  let c=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const a=poly[i], b=poly[j];
+    if(((a[1]>pt[1])!==(b[1]>pt[1])) && (pt[0] < (b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0])) c=!c;
+  }
+  return c;
+}
+// Nearest-next order, but a shape waits until every shape inside it is cut.
+function orderInnerFirst(shapes, start, startlong){
+  const n=shapes.length, bb=shapes.map(p=>bbox([p])), inside=shapes.map(()=>[]);
+  const e=1e-9;
+  for(let b=0;b<n;b++){ if(!shapes[b].closed) continue; const B=bb[b];
+    for(let a=0;a<n;a++){ if(a===b) continue; const A=bb[a];
+      if(A.x0>=B.x0-e && A.x1<=B.x1+e && A.y0>=B.y0-e && A.y1<=B.y1+e && A.w*A.h<B.w*B.h && pointInPoly(shapes[a].pts[0],shapes[b].pts)) inside[b].push(a);
+    }
+  }
+  const sp=shapes.map(p=>(p.closed&&startlong)?rotateClosed(p.pts)[0]:p.pts[0]);
+  const ep=shapes.map((p,i)=>p.closed?sp[i]:p.pts[p.pts.length-1]);
+  const done=new Array(n).fill(false), out=[]; let cur=start;
+  for(let k=0;k<n;k++){
+    let bi=-1, bd=Infinity;
+    for(let i=0;i<n;i++){
+      if(done[i] || inside[i].some(a=>!done[a])) continue;
+      const d=dist(cur,sp[i]); if(d<bd){ bd=d; bi=i; }
+    }
+    if(bi<0) for(let i=0;i<n;i++) if(!done[i]){ bi=i; break; }
+    done[bi]=true; out.push(shapes[bi]); cur=ep[bi];
+  }
+  return out;
+}
+
+function lastPos(moves){
+  for(let i=moves.length-1;i>=0;i--) if(moves[i].x!==undefined) return [moves[i].x,moves[i].y];
+  return [0,0];
+}
+function orderNearest(shapes, start){
+  let cur=start; const rest=shapes.slice(), out=[];
+  while(rest.length){
+    let bi=0, bd=Infinity, bv=0, brev=false;
+    for(let i=0;i<rest.length;i++){
+      const p=rest[i], pts=p.pts;
+      if(p.closed){
+        const n=pts.length-1, stepv=n>200?Math.ceil(n/200):1;
+        for(let v=0;v<n;v+=stepv){ const d=dist(cur,pts[v]); if(d<bd){bd=d;bi=i;bv=v;brev=false;} }
+      } else {
+        const d1=dist(cur,pts[0]), d2=dist(cur,pts[pts.length-1]);
+        if(d1<bd){bd=d1;bi=i;bv=0;brev=false;}
+        if(d2<bd){bd=d2;bi=i;bv=0;brev=true;}
+      }
+    }
+    const p=rest.splice(bi,1)[0]; let pts=p.pts;
+    if(p.closed && bv>0) pts=pts.slice(bv,pts.length-1).concat(pts.slice(0,bv+1));
+    if(!p.closed && brev) pts=pts.slice().reverse();
+    out.push({pts,closed:p.closed,color:p.color}); cur=pts[pts.length-1];
+  }
+  return out;
+}
+
+function f3(v){ v=Math.abs(v)<5e-5?0:v; return v.toFixed(3); }
+function f4(v){ v=Math.abs(v)<5e-6?0:v; return v.toFixed(4); }
+
+function writeGcode(job, s, meta){
+  const L=[];
+  const isPen=meta.mode==='pen';
+  L.push(isPen?'(G-Code-Inator - pen)':'(G-Code-Inator - drag knife)');
+  L.push('(Source: '+String(meta.name||'').replace(/[()]/g,'')+')');
+  L.push(isPen?'(Zero X Y at lower left. Zero Z with pen tip touching the paper.)':'(Zero X Y at lower left. Zero Z with blade tip touching the material.)');
+  if(s.vary!=='none') job.copies.forEach(c=>L.push('(Test cut '+(c.k+1)+' from left: '+s.vary+' = '+c.val+(c.bad?' SKIPPED':'')+')'));
+  const fixed=isPen?{depth:'Depth '+s.depth,feed:'Speed '+s.feed+' mm/s'}:{offset:'Offset '+s.offset,overcut:'Overcut '+s.overcut,depth:'Depth '+s.depth,feed:'Speed '+s.feed+' mm/s'};
+  if(s.vary!=='none') delete fixed[s.vary];
+  const np=Math.max(1,Math.min(5,Math.round(s.passes||1)));
+  if(np>1) fixed.passes='Passes '+np+' (each '+(s.pextra>0?s.pextra:0)+' deeper)';
+  L.push('(Fixed: '+Object.values(fixed).join('  ')+')');
+  if(isPen && s.pens && s.pens.length>1) L.push('(Pens in order: '+s.pens.map((c,i)=>(i+1)+' '+((s.penNames&&s.penNames[c])||c)).join(', ')+'. Start with pen 1.)');
+  for(const ln of String(s.gstart).split(/\r?\n/)) if(ln.trim()) L.push(ln.trim());
+  L.push('G0 Z'+f3(s.safez));
+  let cx=NaN, cy=NaN;
+  for(const m of job.moves){
+    if((m.t==='line'||m.t==='arc') && Math.hypot(m.x-cx,m.y-cy)<1e-4) continue;
+    if(m.x!==undefined){ cx=m.x; cy=m.y; }
+    if(m.t==='travel'){ L.push('G0 X'+f3(m.x)+' Y'+f3(m.y)); }
+    else if(m.t==='down'){ L.push('G1 Z'+f3(m.z)+' F'+Math.round(s.plunge*60)); }
+    else if(m.t==='up'){ L.push('G0 Z'+f3(s.safez)); }
+    else if(m.t==='plunge'){ L.push('G1 Z'+f3(m.z)+' F'+Math.round(s.plunge*60)); }
+    else if(m.t==='toolchange'){
+      const nm=c=>(s.penNames&&s.penNames[c])||'next';
+      L.push('G0 Z'+f3(Math.max(10,s.safez)));
+      L.push('G0 X0 Y0');
+      L.push('M0 (MSG Remove '+nm(m.from)+' pen)');
+      L.push('G0 Z0');
+      L.push('M0 (MSG Insert '+nm(m.to)+' pen touching the paper)');
+      L.push('G0 Z'+f3(s.safez));
+    }
+    else if(m.t==='line'){ L.push('G1 X'+f3(m.x)+' Y'+f3(m.y)+' F'+Math.round(m.f*60)); }
+    else if(m.t==='arc'){ L.push((m.cw?'G2':'G3')+' X'+f4(m.x)+' Y'+f4(m.y)+' I'+f4(m.i)+' J'+f4(m.j)+' F'+Math.round(m.f*60)); }
+  }
+  L.push('G0 Z'+f3(s.safez));
+  for(const ln of String(s.gend).split(/\r?\n/)) if(ln.trim()) L.push(ln.trim());
+  return L.join('\n')+'\n';
+}
+
+// Cut/draw length for the stats. (Time comes from the animation, which models every move.)
+function jobStats(job){
+  let cut=0, x=0, y=0;
+  for(const m of job.moves){
+    if(m.t==='line'){ cut+=Math.hypot(m.x-x,m.y-y); }
+    else if(m.t==='arc'){ cut+=Math.abs(m.delta)*m.r; }
+    if(m.x!==undefined){ x=m.x; y=m.y; }
+  }
+  return {cut};
+}
+
+</script>
+<script>
+const DEF={mirror:false,margin:4,offset:0.4,overcut:0.5,depth:0.5,passes:1,pextra:0.15,precut:true,startlong:true,innerfirst:true,
+  feed:20,plunge:5,safez:2,vary:'none',vstart:0.1,vstep:0.05,vcount:5,gap:6,gstart:'G21\nG90\nG94',gend:'G0 Z10\nG0 X0 Y0\nM30'};
+const DEF_PEN={mirror:false,margin:3,depth:0.5,feed:25,plunge:10,safez:2,optimize:true,
+  vary:'none',vstart:0.3,vstep:0.1,vcount:5,gap:6,gstart:'G21\nG90\nG94',gend:'G0 Z10\nG0 X0 Y0\nM30'};
+const FIXED={tol:0.03,thresh:5,preswivel:true};
+const PEN_FIXED={offset:0,overcut:0,passes:1,pextra:0,preswivel:false,precut:false,startlong:false,innerfirst:false,thresh:5};
+const STORE={knife:'dk-settings-v1',pen:'dk-settings-pen-v1'};
+const VARY={knife:[['none','Off'],['offset','Blade offset'],['depth','Cut depth'],['overcut','Overcut'],['feed','Cut speed']],
+            pen:[['none','Off'],['depth','Pen down depth'],['feed','Draw speed']]};
+let mode='knife';
+// Settings last only for this visit: every page load starts from the defaults.
+// (Each mode keeps its own values while the page is open.) Clear anything older versions saved.
+const SESSION={};
+try{ ['dk-settings-v1','dk-settings-pen-v1','dk-mode'].forEach(k=>localStorage.removeItem(k)); }catch(e){}
+const defs=()=>mode==='pen'?DEF_PEN:DEF;
+const $=id=>document.getElementById(id);
+const state={raw:null,name:'',job:null,gcode:'',pens:[],penNames:{},penMap:{}};
+let downloads=null, inViewer=false;
+
+// ===== SVG reader =====
+function svgPathToPolys(d, tol){
+  const toks=String(d).match(/[MmLlHhVvCcSsQqTtAaZz]|[-+]?(?:\d*\.\d+|\d+\.?)(?:[eE][-+]?\d+)?/g)||[];
+  const polys=[]; let cur=null, cx=0, cy=0, sx=0, sy=0, cmd=null, i=0, pc=null, pq=null;
+  const num=()=>parseFloat(toks[i++]);
+  const isNum=()=>i<toks.length && !/^[A-Za-z]$/.test(toks[i]);
+  const start=(x,y)=>{ if(cur&&cur.pts.length>1) polys.push(cur); cur={pts:[[x,y]],closed:false}; sx=x; sy=y; };
+  const ensure=()=>{ if(!cur){ cur={pts:[[cx,cy]],closed:false}; sx=cx; sy=cy; } };
+  const lineTo=(x,y)=>{ ensure(); cur.pts.push([x,y]); cx=x; cy=y; };
+  const cubic=(x1,y1,x2,y2,x,y)=>{ ensure();
+    const M=Math.max(Math.hypot(cx-2*x1+x2,cy-2*y1+y2),Math.hypot(x1-2*x2+x,y1-2*y2+y));
+    const n=Math.min(1000,Math.max(1,Math.ceil(Math.sqrt(0.75*M/tol))));
+    for(let k=1;k<=n;k++){ const t=k/n,u=1-t;
+      cur.pts.push([u*u*u*cx+3*u*u*t*x1+3*u*t*t*x2+t*t*t*x, u*u*u*cy+3*u*u*t*y1+3*u*t*t*y2+t*t*t*y]); }
+    cx=x; cy=y; };
+  const quad=(x1,y1,x,y)=>{ ensure();
+    const M=Math.hypot(cx-2*x1+x,cy-2*y1+y);
+    const n=Math.min(1000,Math.max(1,Math.ceil(Math.sqrt(M/(4*tol)))));
+    for(let k=1;k<=n;k++){ const t=k/n,u=1-t; cur.pts.push([u*u*cx+2*u*t*x1+t*t*x, u*u*cy+2*u*t*y1+t*t*y]); }
+    cx=x; cy=y; };
+  const arc=(rx,ry,phi,fa,fs,x,y)=>{ ensure();
+    rx=Math.abs(rx); ry=Math.abs(ry);
+    if(rx<1e-12||ry<1e-12||(Math.abs(x-cx)<1e-12&&Math.abs(y-cy)<1e-12)){ if(rx<1e-12||ry<1e-12) lineTo(x,y); return; }
+    const ph=phi*Math.PI/180, co=Math.cos(ph), si=Math.sin(ph);
+    const dx=(cx-x)/2, dy=(cy-y)/2, x1p=co*dx+si*dy, y1p=-si*dx+co*dy;
+    let lam=x1p*x1p/(rx*rx)+y1p*y1p/(ry*ry); if(lam>1){ const r=Math.sqrt(lam); rx*=r; ry*=r; }
+    const num_=rx*rx*ry*ry-rx*rx*y1p*y1p-ry*ry*x1p*x1p, den=rx*rx*y1p*y1p+ry*ry*x1p*x1p;
+    let c=Math.sqrt(Math.max(0,num_/den)); if(!!fa===!!fs) c=-c;
+    const cxp=c*rx*y1p/ry, cyp=-c*ry*x1p/rx;
+    const ecx=co*cxp-si*cyp+(cx+x)/2, ecy=si*cxp+co*cyp+(cy+y)/2;
+    const ang=(ux,uy,vx,vy)=>Math.atan2(ux*vy-uy*vx,ux*vx+uy*vy);
+    const t1=ang(1,0,(x1p-cxp)/rx,(y1p-cyp)/ry);
+    let dt=ang((x1p-cxp)/rx,(y1p-cyp)/ry,(-x1p-cxp)/rx,(-y1p-cyp)/ry);
+    if(!fs&&dt>0) dt-=2*Math.PI; else if(fs&&dt<0) dt+=2*Math.PI;
+    const R=Math.max(rx,ry), step=2*Math.acos(Math.max(-1,Math.min(1,1-tol/R)));
+    const n=Math.min(1000,Math.max(2,Math.ceil(Math.abs(dt)/Math.max(step,1e-3))));
+    for(let k=1;k<=n;k++){ const t=t1+dt*k/n, ex=rx*Math.cos(t), ey=ry*Math.sin(t);
+      cur.pts.push(k===n?[x,y]:[co*ex-si*ey+ecx, si*ex+co*ey+ecy]); }
+    cx=x; cy=y; };
+  while(i<toks.length){
+    if(/^[A-Za-z]$/.test(toks[i])) cmd=toks[i++]; else if(!cmd) { i++; continue; }
+    const rel=cmd===cmd.toLowerCase(), C=cmd.toUpperCase();
+    if(C==='Z'){ if(cur){ cur.pts.push([sx,sy]); cur.closed=true; polys.push(cur); cur=null; } cx=sx; cy=sy; pc=pq=null; continue; }
+    if(!isNum()){ continue; }
+    const ox=rel?cx:0, oy=rel?cy:0;
+    if(C==='M'){ const x=num()+ox, y=num()+oy; start(x,y); cx=x; cy=y; cmd=rel?'l':'L'; pc=pq=null; }
+    else if(C==='L'){ lineTo(num()+ox,num()+oy); pc=pq=null; }
+    else if(C==='H'){ lineTo(num()+ox,cy); pc=pq=null; }
+    else if(C==='V'){ lineTo(cx,num()+oy); pc=pq=null; }
+    else if(C==='C'){ const a=num()+ox,b=num()+oy,c2=num()+ox,d2=num()+oy,x=num()+ox,y=num()+oy; cubic(a,b,c2,d2,x,y); pc=[c2,d2]; pq=null; }
+    else if(C==='S'){ const r1=pc?[2*cx-pc[0],2*cy-pc[1]]:[cx,cy]; const c2=num()+ox,d2=num()+oy,x=num()+ox,y=num()+oy; cubic(r1[0],r1[1],c2,d2,x,y); pc=[c2,d2]; pq=null; }
+    else if(C==='Q'){ const a=num()+ox,b=num()+oy,x=num()+ox,y=num()+oy; quad(a,b,x,y); pq=[a,b]; pc=null; }
+    else if(C==='T'){ const r1=pq?[2*cx-pq[0],2*cy-pq[1]]:[cx,cy]; const x=num()+ox,y=num()+oy; quad(r1[0],r1[1],x,y); pq=r1; pc=null; }
+    else if(C==='A'){ const rx=num(),ry=num(),ph=num(),fa=num(),fs=num(),x=num()+ox,y=num()+oy; arc(rx,ry,ph,fa,fs,x,y); pc=pq=null; }
+    else { i++; }
+  }
+  if(cur&&cur.pts.length>1) polys.push(cur);
+  return polys;
+}
+function shapeToD(el){
+  const n=k=>parseFloat(el.getAttribute(k))||0, tag=el.localName;
+  if(tag==='path') return el.getAttribute('d')||'';
+  if(tag==='line') return 'M'+n('x1')+' '+n('y1')+'L'+n('x2')+' '+n('y2');
+  if(tag==='polyline'||tag==='polygon'){ const v=(el.getAttribute('points')||'').trim().split(/[\s,]+/).map(Number);
+    if(v.length<4) return ''; let d='M'+v[0]+' '+v[1]; for(let k=2;k+1<v.length;k+=2) d+='L'+v[k]+' '+v[k+1]; return tag==='polygon'?d+'Z':d; }
+  if(tag==='circle'){ const cx=n('cx'),cy=n('cy'),r=n('r'); if(r<=0) return '';
+    return 'M'+(cx-r)+' '+cy+'A'+r+' '+r+' 0 1 0 '+(cx+r)+' '+cy+'A'+r+' '+r+' 0 1 0 '+(cx-r)+' '+cy+'Z'; }
+  if(tag==='ellipse'){ const cx=n('cx'),cy=n('cy'),rx=n('rx'),ry=n('ry'); if(rx<=0||ry<=0) return '';
+    return 'M'+(cx-rx)+' '+cy+'A'+rx+' '+ry+' 0 1 0 '+(cx+rx)+' '+cy+'A'+rx+' '+ry+' 0 1 0 '+(cx-rx)+' '+cy+'Z'; }
+  if(tag==='rect'){ const x=n('x'),y=n('y'),w=n('width'),h=n('height'); if(w<=0||h<=0) return '';
+    let rx=el.hasAttribute('rx')?n('rx'):(el.hasAttribute('ry')?n('ry'):0), ry=el.hasAttribute('ry')?n('ry'):rx;
+    rx=Math.min(rx,w/2); ry=Math.min(ry,h/2);
+    if(rx<=0||ry<=0) return 'M'+x+' '+y+'H'+(x+w)+'V'+(y+h)+'H'+x+'Z';
+    return 'M'+(x+rx)+' '+y+'H'+(x+w-rx)+'A'+rx+' '+ry+' 0 0 1 '+(x+w)+' '+(y+ry)+'V'+(y+h-ry)+'A'+rx+' '+ry+' 0 0 1 '+(x+w-rx)+' '+(y+h)
+      +'H'+(x+rx)+'A'+rx+' '+ry+' 0 0 1 '+x+' '+(y+h-ry)+'V'+(y+ry)+'A'+rx+' '+ry+' 0 0 1 '+(x+rx)+' '+y+'Z'; }
+  return '';
+}
+function cssToHex(c){
+  const m=String(c||'').match(/rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)(?:[,\s/]+([\d.]+%?))?/);
+  if(!m) return null;
+  if(m[4]!==undefined && parseFloat(m[4])===0) return null;
+  return '#'+[m[1],m[2],m[3]].map(v=>Math.round(+v).toString(16).padStart(2,'0')).join('');
+}
+// Line color: the stroke, or the fill if there is no stroke. Null if the shape is invisible.
+function elColor(el){
+  const cs=getComputedStyle(el);
+  const st=cs.stroke&&cs.stroke!=='none'&&!/^url/.test(cs.stroke)?cssToHex(cs.stroke):null;
+  const fi=cs.fill&&cs.fill!=='none'&&!/^url/.test(cs.fill)?cssToHex(cs.fill):null;
+  if(st||fi) return st||fi;
+  if(/^url/.test(cs.stroke)||/^url/.test(cs.fill)) return '#000000';
+  return null;
+}
+const COLOR_NAMES=[['black',0,0,0],['gray',128,128,128],['white',255,255,255],['red',220,30,30],['orange',255,140,0],['yellow',245,215,0],
+  ['green',30,150,50],['dark green',0,90,40],['blue',30,80,220],['navy',0,0,128],['light blue',100,180,240],['purple',128,50,160],
+  ['pink',240,110,180],['brown',140,80,30]];
+function colorName(hex){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  let best='black',bd=Infinity;
+  for(const [n,R,G,B] of COLOR_NAMES){ const d=(r-R)**2+(g-G)**2+(b-B)**2; if(d<bd){bd=d;best=n;} }
+  return best;
+}
+function lum(hex){ const v=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)); return .299*v[0]+.587*v[1]+.114*v[2]; }
+const svgCache={key:null,val:null};
+function parseSVG(text, tolMM){
+  const key=tolMM+'|'+text;
+  if(svgCache.key===key) return svgCache.val;
+  const res={paths:[],colors:[],warnings:[]};
+  const doc=new DOMParser().parseFromString(text,'image/svg+xml');
+  const root=doc.documentElement;
+  if(!root || root.localName!=='svg' || doc.getElementsByTagName('parsererror').length){ res.warnings.push('That file could not be read as an SVG.'); return res; }
+  const host=document.getElementById('svghost'); host.innerHTML='';
+  const svg=document.importNode(root,true);
+  svg.querySelectorAll('script,foreignObject').forEach(e=>e.remove());
+  const vb=(svg.getAttribute('viewBox')||'').trim().split(/[\s,]+/).map(Number);
+  const okLen=v=>v && !/%$/.test(v.trim());
+  if(!okLen(svg.getAttribute('width'))||!okLen(svg.getAttribute('height'))){
+    if(vb.length===4){ svg.setAttribute('width',vb[2]); svg.setAttribute('height',vb[3]); }
+    res.warnings.push('The SVG has no size in mm, so 1 unit is treated as 1 pixel (96 per inch). Check the size shown below.');
+  }
+  host.append(svg);
+  const SVGNS='http://www.w3.org/2000/svg', XL='http://www.w3.org/1999/xlink';
+  for(let pass=0;pass<20;pass++){
+    const uses=[...svg.querySelectorAll('use')]; if(!uses.length) break;
+    for(const u of uses){
+      const href=u.getAttribute('href')||u.getAttributeNS(XL,'href')||'';
+      const ref=href.startsWith('#')?svg.querySelector('[id="'+href.slice(1).replace(/"/g,'')+'"]'):null;
+      const g=document.createElementNS(SVGNS,'g');
+      for(const a of ['style','class','display','visibility']) if(u.hasAttribute(a)) g.setAttribute(a,u.getAttribute(a));
+      const t=(u.getAttribute('transform')||'')+' translate('+(parseFloat(u.getAttribute('x'))||0)+','+(parseFloat(u.getAttribute('y'))||0)+')';
+      g.setAttribute('transform',t);
+      if(ref && !ref.contains(u)){
+        const c=ref.cloneNode(true); c.removeAttribute('id'); c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+        if(c.localName==='symbol'){ while(c.firstChild) g.append(c.firstChild); } else g.append(c);
+      } else res.warnings.push('A linked copy (clone) points to something missing and was skipped.');
+      u.replaceWith(g);
+    }
+  }
+  const hiddenAnc=el=>{ for(let e=el;e&&e!==host;e=e.parentElement){ const cs=getComputedStyle(e); if(cs.display==='none') return true; if(e.localName==='defs'||e.localName==='clipPath'||e.localName==='mask'||e.localName==='symbol'||e.localName==='marker'||e.localName==='pattern') return true; } return getComputedStyle(el).visibility==='hidden'; };
+  const pxToMM=25.4/96;
+  let nText=0, nImg=0;
+  svg.querySelectorAll('text').forEach(t=>{ if(!hiddenAnc(t)) nText++; });
+  svg.querySelectorAll('image').forEach(t=>{ if(!hiddenAnc(t)) nImg++; });
+  svg.querySelectorAll('path,rect,circle,ellipse,line,polyline,polygon').forEach(el=>{
+    if(hiddenAnc(el)) return;
+    const m=el.getCTM(); if(!m) return;
+    const scale=Math.sqrt(Math.abs(m.a*m.d-m.b*m.c))*pxToMM || 1;
+    const col=elColor(el);
+    if(!col) return;
+    const polys=svgPathToPolys(shapeToD(el), Math.max(1e-6,tolMM/scale));
+    for(const p of polys){
+      res.colors.push(col);
+      res.paths.push(p.pts.map(([x,y])=>[(m.a*x+m.c*y+m.e)*pxToMM, -(m.b*x+m.d*y+m.f)*pxToMM]));
+    }
+  });
+  host.innerHTML='';
+  if(nText) res.warnings.push(nText+' text object'+(nText>1?'s were':' was')+' skipped. Convert text to paths, then save again.');
+  if(nImg) res.warnings.push(nImg+' image'+(nImg>1?'s were':' was')+' skipped. Only vector paths can be cut or plotted.');
+  svgCache.key=key; svgCache.val=res;
+  return res;
+}
+
+function fillVary(){
+  const sel=$('vary'); sel.innerHTML='';
+  for(const [v,t] of VARY[mode]){ const o=document.createElement('option'); o.value=v; o.textContent=t; sel.append(o); }
+}
+function loadSettings(){
+  const D=defs(); let saved={};
+  saved=SESSION[STORE[mode]]||{};
+  fillVary();
+  for(const k of Object.keys(D)){
+    let v = (k in saved) ? saved[k] : D[k]; const el=$(k);
+    if(k==='vary' && !VARY[mode].some(o=>o[0]===v)) v='none';
+    if(el.type==='checkbox') el.checked=!!v; else el.value=v;
+  }
+}
+// Show fine-step fields with a fixed number of decimals (0.10, 0.11, 0.12…).
+const FIXED2=['offset','depth','pextra','vstart','vstep'];
+function decimalsFor(el){ const st=String(el.getAttribute('step')||'1'); const d=st.includes('.')?st.split('.')[1].length:0; return Math.min(2,d); }
+function tidyNumber(el){
+  if(!el || el.value==='' ) return;
+  const v=parseFloat(el.value); if(!isFinite(v)) return;
+  const d=decimalsFor(el); if(d<2) return;
+  const t=v.toFixed(d); if(el.value!==t) el.value=t;
+}
+function tidyAll(){ FIXED2.forEach(id=>tidyNumber($(id))); }
+function syncTestSteps(){
+  const isFeed=$('vary').value==='feed', v=$('vary').value;
+  $('vstart').setAttribute('min', isFeed?'1':(v==='depth'?'0.01':'0'));
+  for(const id of ['vstart','vstep']){ $(id).setAttribute('step',isFeed?'1':'0.01'); if(isFeed){ const v=parseFloat($(id).value); if(isFinite(v)) $(id).value=String(+v.toFixed(2)); } }
+}
+function readSettings(){
+  const D=defs(), s={};
+  for(const k of Object.keys(D)){
+    const el=$(k);
+    if(el.type==='checkbox') s[k]=el.checked;
+    else if(el.tagName==='SELECT'||el.tagName==='TEXTAREA') s[k]=el.value;
+    else { const v=parseFloat(el.value); s[k]=isFinite(v)?v:D[k]; }
+  }
+  return s;
+}
+function jobSettings(){ const s=Object.assign({},FIXED,readSettings());
+  if(mode!=='pen') return s;
+  Object.assign(s,PEN_FIXED,{vary:'none'});
+  if(state.pens.length>1){ s.pens=state.pens.slice(); s.penNames=state.penNames; s.penMap=state.penMap; }
+  return s; }
+function saveSettings(s){ SESSION[STORE[mode]]=s; }
+function clearShapes(){ state.raw=null; state.name=''; $('loaded').textContent=''; }
+function setMode(m){
+  if(m==='pen' && state.raw && state.raw.kind==='test') clearShapes();
+  mode=m;
+  document.body.dataset.mode=m;
+  $('m-knife').setAttribute('aria-pressed',String(m==='knife'));
+  $('m-pen').setAttribute('aria-pressed',String(m==='pen'));
+  loadSettings(); syncTestSteps(); tidyAll(); update();
+}
+
+function base(){
+  if(!state.raw) return null;
+  if(state.raw.kind==='test') return testShapes();
+  if(state.raw.kind==='svg'){ const r=parseSVG(state.raw.text, FIXED.tol); return cleanPaths(r.paths, r.colors); }
+  return null;
+}
+
+const LABELS={knife:{offset:'Blade offset',depth:'Cut depth',overcut:'Overcut',feed:'Cut speed'},pen:{depth:'Pen down depth',feed:'Draw speed'}};
+const UNIT={offset:'mm',depth:'mm',overcut:'mm',feed:'mm/s'};
+
+function syncPens(b){
+  // Colors within a small distance of each other count as the same pen.
+  const near=(a,c)=>{ const v=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)); const A=v(a),C=v(c); return Math.hypot(A[0]-C[0],A[1]-C[1],A[2]-C[2])<40; };
+  const found=[], map={};
+  for(const p of (b||[])){ if(!p.color||map[p.color]) continue; const rep=found.find(c=>near(c,p.color)); if(rep) map[p.color]=rep; else { found.push(p.color); map[p.color]=p.color; } }
+  state.penMap=map;
+  const same=found.length===state.pens.length && found.every(c=>state.pens.includes(c));
+  if(!same){
+    state.pens=found.slice().sort((a,c)=>lum(c)-lum(a));
+    const used={}; state.penNames={};
+    for(const c of state.pens){ let n=colorName(c); used[n]=(used[n]||0)+1; state.penNames[c]=used[n]>1?n+' '+used[n]:n; }
+  }
+  renderPens();
+}
+function renderPens(){
+  const box=$('penbox'), ol=$('penlist');
+  box.hidden=!(mode==='pen' && state.pens.length>1);
+  document.body.classList.toggle('multipen', state.pens.length>1);
+  const multi=mode==='pen'&&state.pens.length>1;
+  $('leg-line').style.setProperty('--c', multi?'linear-gradient(90deg,'+state.pens.map((c,i,a)=>c+' '+(i/a.length*100)+'%,'+c+' '+((i+1)/a.length*100)+'%').join(',')+')':'var(--tip)');
+  ol.innerHTML='';
+  state.pens.forEach((c,i)=>{
+    const li=document.createElement('li');
+    const num=document.createElement('span'); num.className='num'; num.textContent=(i+1)+'.';
+    const sw=document.createElement('span'); sw.className='sw'; sw.style.background=c;
+    const nm=document.createElement('span'); nm.className='nm'; nm.textContent=state.penNames[c];
+    const up=document.createElement('button'); up.type='button'; up.className='ghost'; up.textContent='▲'; up.setAttribute('aria-label','Move '+state.penNames[c]+' earlier'); up.disabled=i===0;
+    const dn=document.createElement('button'); dn.type='button'; dn.className='ghost'; dn.textContent='▼'; dn.setAttribute('aria-label','Move '+state.penNames[c]+' later'); dn.disabled=i===state.pens.length-1;
+    up.onclick=()=>{ const a=state.pens; [a[i-1],a[i]]=[a[i],a[i-1]]; update(); };
+    dn.onclick=()=>{ const a=state.pens; [a[i+1],a[i]]=[a[i],a[i+1]]; update(); };
+    li.append(num,sw,nm,up,dn); ol.append(li);
+  });
+}
+// Settings that would make an unusable or unsafe file.
+function settingErrors(s){
+  const e=[], pen=mode==='pen', v=s.vary||'none';
+  const chk=(key,ok,msg)=>{ if(v!==key && !ok) e.push(msg); };
+  chk('depth', s.depth>0, (pen?'Pen down depth':'Cut depth')+' must be more than 0.');
+  chk('feed', s.feed>0, (pen?'Draw speed':'Cut speed')+' must be more than 0.');
+  chk('', s.plunge>0, 'Plunge speed must be more than 0.');
+  chk('', s.safez>=0.5, (pen?'Pen up height':'Travel height')+' must be at least 0.5 mm.');
+  chk('', s.margin>=0, 'Space before design can\u2019t be negative.');
+  if(!pen){
+    chk('offset', s.offset>=0, 'Blade offset can\u2019t be negative.');
+    chk('overcut', s.overcut>=0, 'Overcut can\u2019t be negative.');
+    chk('', s.pextra>=0, 'Extra depth per pass can\u2019t be negative.');
+    chk('', s.passes>=1, 'Passes must be at least 1.');
+  }
+  return e;
+}
+function update(){
+  saveSettings(readSettings()); let s=jobSettings(); const LABEL=LABELS[mode];
+  ['offset','overcut','depth','feed'].forEach(k=>$('r-'+k).classList.toggle('off',s.vary===k));
+  $('testfields').classList.toggle('off',s.vary==='none');
+  $('r-pextra').hidden=!(Math.round(s.passes)>1);
+  const b=base();
+  $('empty').style.display=(state.raw&&!(b&&b.length))?'flex':'none';
+  if(!b || !b.length){
+    state.job=null; state.gcode=''; buildAnim(null);
+    if(state.raw){
+      let msg='No paths found in that file. Convert objects to paths, then save again.';
+      if(state.raw.kind==='svg'){ const ws=parseSVG(state.raw.text, FIXED.tol).warnings; if(ws.length) msg=ws.join(' '); }
+      $('empty').textContent=msg;
+    }
+    state.pens=[]; renderPens();
+    $('stats').innerHTML=''; $('copies').innerHTML=''; $('warns').innerHTML='';
+    $('save').disabled=true; $('out').value=''; draw(); return;
+  }
+  syncPens(b); s=jobSettings();
+  const errs=settingErrors(s);
+  const job=buildJob(b,s); state.job=job; buildAnim(job);
+  const hasCuts=job.copies.some(c=>!c.bad);
+  const usable=!errs.length && hasCuts;
+  state.gcode=usable?writeGcode(job,s,{name:state.name,mode}):'';
+  $('out').value=state.gcode;
+  const st=jobStats(job), bb=bbox(b);
+  const mins=Math.max(1,Math.round(anim.total/60));
+  $('stats').innerHTML='';
+  [[bb.w.toFixed(1)+' × '+bb.h.toFixed(1)+' mm','Design size'],[b.length,'Shapes'],[(st.cut/1000).toFixed(2)+' m',mode==='pen'?'Line length':'Cut length'],['~'+mins+' min','Estimated time']]
+    .concat(mode==='pen'&&state.pens.length>1?[[state.pens.length,'Pens']]:[])
+    .forEach(([v,l])=>{const d=document.createElement('div');const bEl=document.createElement('b');bEl.textContent=v;const sm=document.createElement('small');sm.textContent=l;d.append(bEl,sm);$('stats').append(d);});
+  const ul=$('copies'); ul.innerHTML='';
+  if(s.vary!=='none') job.copies.forEach(c=>{const li=document.createElement('li');li.textContent='Cut '+(c.k+1)+': '+LABEL[s.vary].toLowerCase()+' '+c.val+' '+UNIT[s.vary]+(c.bad?' (skipped)':'');ul.append(li);});
+  const w=$('warns'); w.innerHTML='';
+  const allW=errs.concat((state.raw&&state.raw.kind==='svg')?parseSVG(state.raw.text, FIXED.tol).warnings.concat(job.warnings):job.warnings);
+  if(!errs.length && !hasCuts) allW.unshift('Every test cut was skipped, so there is nothing to save.');
+  allW.forEach(t=>{const d=document.createElement('div');d.className='warn';d.textContent=t;w.append(d);});
+  $('save').disabled=!usable;
+  draw();
+}
+
+// ===== Animation =====
+const PLAY_ICON='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg>', PAUSE_ICON='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"/></svg>';
+const anim={n:0,hx:null,hy:null,tx:null,ty:null,tm:null,dn:null,i:0,t:0,total:0,playing:false,last:0,raf:0};
+function buildAnim(job){
+  stopAnim(); anim.i=0; anim.t=0; anim.n=0; anim.total=0;
+  anim.changes=[];
+  if(!job||!job.moves.length){ syncAnimUI(); renderMarks(); return; }
+  const s=jobSettings(), mv=job.moves;
+  let len=0; for(const m of mv){ if(m.t==='arc') len+=Math.abs(m.delta)*m.r; }
+  let px=0,py=0; for(const m of mv){ if(m.x!==undefined){ len+=Math.hypot(m.x-px,m.y-py); px=m.x; py=m.y; } }
+  const step=Math.max(0.05, len/150000);
+  const HX=[],HY=[],TX=[],TY=[],TM=[],DN=[],CL=[]; const cols=[null]; let ci=0; const changes=[];
+  const colIdx=c=>{ let k=cols.indexOf(c); if(k<0){ cols.push(c); k=cols.length-1; } return k; };
+  if(s.pens && s.pens.length>1) ci=colIdx(s.pens[0]);
+  let hx=0,hy=0,down=false,r=0,dx=1,dy=0,tx=0,ty=0,t=0;
+  const push=()=>{HX.push(hx);HY.push(hy);TX.push(tx);TY.push(ty);TM.push(t);DN.push(down?1:0);CL.push(ci);};
+  const moveTo=(x,y,dt)=>{ hx=x; hy=y;
+    if(down){ const vx=hx-tx, vy=hy-ty, l=Math.hypot(vx,vy); if(l>1e-9){dx=vx/l;dy=vy/l;} }
+    tx=hx-r*dx; ty=hy-r*dy; t+=dt; push(); };
+  push();
+  for(const m of mv){
+    if(m.t==='travel'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy),N=Math.max(1,Math.ceil(d/Math.max(step,1))),dt=d/50/N;
+      for(let k=1;k<=N;k++) moveTo(sx+(m.x-sx)*k/N, sy+(m.y-sy)*k/N, dt); }
+    else if(m.t==='toolchange'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy),N=Math.max(1,Math.ceil(d/Math.max(step,1))),dt=d/50/N;
+      for(let k=1;k<=N;k++) moveTo(sx+(m.x-sx)*k/N, sy+(m.y-sy)*k/N, dt);
+      const t0=t; t+=3; push(); ci=colIdx(m.to); push(); t+=3; push();
+      changes.push({t0,tm:t0+3,t1:t,from:m.from,to:m.to}); }
+    else if(m.t==='down'){ if(m.c) ci=colIdx(m.c); r=m.r||0; tx=hx-r*dx; ty=hy-r*dy; t+=(s.safez+Math.abs(m.z))/Math.max(0.1,s.plunge); down=true; push(); }
+    else if(m.t==='up'){ t+=0.25; down=false; push(); }
+    else if(m.t==='plunge'){ t+=Math.max(0.1,(s.pextra||0)/Math.max(0.1,s.plunge)); push(); }
+    else if(m.t==='line'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy); if(d<1e-9) continue;
+      const N=Math.max(1,Math.ceil(d/step)),dt=d/m.f/N;
+      for(let k=1;k<=N;k++) moveTo(sx+(m.x-sx)*k/N, sy+(m.y-sy)*k/N, dt); }
+    else if(m.t==='arc'){ const al=Math.abs(m.delta)*m.r, N=Math.max(4,Math.ceil(al/Math.min(step,0.02))), dt=al/m.f/N;
+      for(let k=1;k<=N;k++){ const a=m.a0+m.delta*k/N; moveTo(m.cx+m.r*Math.cos(a), m.cy+m.r*Math.sin(a), dt); } }
+  }
+  anim.hx=Float32Array.from(HX); anim.hy=Float32Array.from(HY); anim.tx=Float32Array.from(TX); anim.ty=Float32Array.from(TY);
+  setTimeout(renderMarks,0);
+  anim.tm=Float64Array.from(TM); anim.dn=Uint8Array.from(DN); anim.cl=Uint8Array.from(CL); anim.cols=cols; anim.changes=changes; anim.n=HX.length; anim.total=t;
+  syncAnimUI();
+}
+function animIndex(t){ let lo=0,hi=anim.n-1; while(lo<hi){ const mid=(lo+hi+1)>>1; if(anim.tm[mid]<=t) lo=mid; else hi=mid-1; } return lo; }
+function fmtTime(sec){ sec=Math.max(0,Math.round(sec)); return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'); }
+function renderMarks(){
+  const box=$('amarks'); box.innerHTML='';
+  if(!(anim.changes&&anim.changes.length&&anim.total>0)) return;
+  for(const c of anim.changes){
+    const b=document.createElement('button'); b.type='button'; b.className='amark';
+    b.style.left=(c.t0/anim.total*100)+'%'; b.style.setProperty('--c',c.to);
+    const nm=(state.penNames&&state.penNames[c.to])||'next';
+    b.title='Pen change to '+nm; b.setAttribute('aria-label','Jump to pen change: '+nm);
+    b.onclick=()=>{ stopAnim(); anim.t=c.t0+0.01; anim.i=animIndex(anim.t); syncAnimUI(); draw(); };
+    box.append(b);
+  }
+}
+function syncAnimUI(){
+  const has=anim.n>1;
+  $('aplay').disabled=!has; $('ascrub').disabled=!has;
+  const want=anim.playing?'pause':'play', btn=$('aplay');
+  if(btn.dataset.icon!==want){ btn.innerHTML=anim.playing?PAUSE_ICON:PLAY_ICON; btn.setAttribute('aria-label',anim.playing?'Pause':'Play'); btn.dataset.icon=want; }
+  $('ascrub').value=has&&anim.total>0?Math.round(anim.t/anim.total*1000):0;
+  $('atime').textContent=fmtTime(anim.t)+' / '+fmtTime(anim.total);
+}
+function stopAnim(){ anim.playing=false; if(anim.raf) cancelAnimationFrame(anim.raf); anim.raf=0; }
+function tick(now){
+  if(!anim.playing) return;
+  const dt=Math.min(0.1,(now-anim.last)/1000); anim.last=now;
+  const speed=parseFloat($('aspeed').value||'5'), chs=anim.changes||[];
+  const inChange=chs.some(c=>anim.t>=c.t0&&anim.t<c.t1);
+  let nt=anim.t+dt*(inChange?Math.min(speed,2):speed);
+  if(!inChange){ const next=chs.find(c=>c.t0>anim.t&&c.t0<nt); if(next) nt=next.t0; }
+  anim.t=nt;
+  if(anim.t>=anim.total){ anim.t=anim.total; anim.playing=false; }
+  anim.i=animIndex(anim.t); syncAnimUI(); draw();
+  if(anim.playing) anim.raf=requestAnimationFrame(tick);
+}
+function togglePlay(){
+  if(anim.n<2) return;
+  if(anim.playing){ stopAnim(); syncAnimUI(); return; }
+  if(anim.t>=anim.total){ anim.t=0; anim.i=0; }
+  anim.playing=true; anim.last=performance.now(); syncAnimUI(); anim.raf=requestAnimationFrame(tick);
+}
+function drawAnim(ctx,X,Y){
+  const n=anim.i;
+  const multi=mode==='pen'&&state.pens.length>1;
+  const trace=(colorFor,width)=>{
+    ctx.lineWidth=width; ctx.lineJoin='round'; ctx.lineCap='round';
+    let cur=null, pen=false;
+    for(let k=1;k<=n;k++){
+      if(anim.dn[k]&&anim.dn[k-1]){
+        const col=colorFor(anim.cl[k]);
+        if(col!==cur){ if(cur!==null) ctx.stroke(); ctx.strokeStyle=col; cur=col; ctx.beginPath(); pen=false; }
+        if(!pen){ ctx.moveTo(X(anim.tx[k-1]),Y(anim.ty[k-1])); pen=true; }
+        ctx.lineTo(X(anim.tx[k]),Y(anim.ty[k]));
+      } else pen=false;
+    }
+    if(cur!==null) ctx.stroke();
+  };
+  if(multi){ trace(()=> 'rgba(255,255,255,.6)',4); trace(i=>anim.cols[i]||cssVar('--tip'),2.2); }
+  else trace(()=>cssVar('--tip'),2);
+  ctx.lineCap='butt';
+  const hx=X(anim.hx[n]), hy=Y(anim.hy[n]), tx=X(anim.tx[n]), ty=Y(anim.ty[n]), isDown=!!anim.dn[n];
+  if(mode!=='pen'){ ctx.strokeStyle=cssVar('--holder'); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(hx,hy); ctx.lineTo(tx,ty); ctx.stroke(); }
+  const penCol=multi?anim.cols[anim.cl[n]]:null;
+  if(penCol){ ctx.beginPath(); ctx.arc(hx,hy,7,0,Math.PI*2); ctx.lineWidth=5; ctx.strokeStyle='rgba(255,255,255,.75)'; ctx.stroke(); }
+  ctx.beginPath(); ctx.arc(hx,hy,7,0,Math.PI*2); ctx.lineWidth=2; ctx.strokeStyle=penCol||cssVar('--holder');
+  if(isDown){ ctx.fillStyle=penCol||cssVar('--holder'); ctx.globalAlpha=.55; ctx.fill(); ctx.globalAlpha=1; }
+  ctx.stroke();
+  const ch=(anim.changes||[]).find(c=>anim.t>=c.t0&&anim.t<c.t1);
+  if(ch){
+    const nm=c=>(state.penNames&&state.penNames[c])||'next';
+    const removing=anim.t<ch.tm, col=removing?ch.from:ch.to;
+    const msg=removing?'Pen change: remove '+nm(ch.from)+' pen':'Pen change: insert '+nm(ch.to)+' pen';
+    const W=ctx.canvas.clientWidth;
+    ctx.font='600 15px Barlow, system-ui, sans-serif';
+    const tw=ctx.measureText(msg).width, bw=tw+52, bh=36, bx=(W-bw)/2, by=14;
+    ctx.fillStyle='rgba(247,245,236,.96)'; ctx.beginPath();
+    if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,18); else ctx.rect(bx,by,bw,bh);
+    ctx.fill();
+    ctx.beginPath(); ctx.arc(bx+20,by+bh/2,7,0,Math.PI*2); ctx.fillStyle=col; ctx.fill(); ctx.lineWidth=1; ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.stroke();
+    ctx.fillStyle='#1E2522'; ctx.textBaseline='middle'; ctx.fillText(msg,bx+36,by+bh/2+1); ctx.textBaseline='alphabetic';
+  }
+  if(mode!=='pen'){ ctx.beginPath(); ctx.arc(tx,ty,2.5,0,Math.PI*2); ctx.fillStyle=cssVar('--tip'); ctx.fill(); }
+}
+
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim();}
+function draw(){
+  const cv=$('cv'), dpr=window.devicePixelRatio||1, W=cv.clientWidth, H=cv.clientHeight;
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  const ctx=cv.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,W,H);
+  const job=state.job;
+  let x0=0,y0=0,x1=50,y1=30;
+  if(job){
+    x0=0;y0=0;x1=-Infinity;y1=-Infinity;
+    for(const t of job.tips) for(const q of t.pts){x0=Math.min(x0,q[0]);y0=Math.min(y0,q[1]);x1=Math.max(x1,q[0]);y1=Math.max(y1,q[1]);}
+    for(const m of job.moves) if(m.x!==undefined){x0=Math.min(x0,m.x);y0=Math.min(y0,m.y);x1=Math.max(x1,m.x);y1=Math.max(y1,m.y);}
+    y0-=4;
+  }
+  const pad=24, sc=Math.min((W-2*pad)/Math.max(1,x1-x0),(H-2*pad)/Math.max(1,y1-y0));
+  const ox=pad+((W-2*pad)-(x1-x0)*sc)/2, oy=H-pad-((H-2*pad)-(y1-y0)*sc)/2;
+  const X=x=>ox+(x-x0)*sc, Y=y=>oy-(y-y0)*sc;
+  // grid
+  const gx0=Math.floor((x0-(ox)/sc)), gx1=Math.ceil(x0+(W-ox)/sc), gy0=Math.floor(y0-(H-oy)/sc), gy1=Math.ceil(y0+oy/sc);
+  const drawGrid=(step,col)=>{ctx.strokeStyle=col;ctx.lineWidth=1;ctx.beginPath();
+    for(let g=Math.ceil(gx0/step)*step;g<=gx1;g+=step){const p=Math.round(X(g))+.5;ctx.moveTo(p,0);ctx.lineTo(p,H);}
+    for(let g=Math.ceil(gy0/step)*step;g<=gy1;g+=step){const p=Math.round(Y(g))+.5;ctx.moveTo(0,p);ctx.lineTo(W,p);}
+    ctx.stroke();};
+  if(sc>=5) drawGrid(1,cssVar('--mat-minor'));
+  drawGrid(sc>=1.2?10:50,cssVar('--mat-major'));
+  // origin
+  ctx.strokeStyle=cssVar('--tip'); ctx.lineWidth=1.5; ctx.beginPath();
+  ctx.moveTo(X(0)-8,Y(0));ctx.lineTo(X(0)+8,Y(0));ctx.moveTo(X(0),Y(0)-8);ctx.lineTo(X(0),Y(0)+8);ctx.stroke();
+  ctx.fillStyle=cssVar('--tip'); ctx.font='500 12px Barlow, system-ui, sans-serif'; ctx.fillText('zero',X(0)+6,Y(0)+16);
+  if(!job) return;
+  const animOn=anim.n>1&&(anim.playing||anim.t>0);
+  if(animOn) ctx.globalAlpha=.25;
+  // travel + holder
+  let cx=0,cy=0;
+  ctx.setLineDash([4,4]); ctx.strokeStyle=cssVar('--travel'); ctx.lineWidth=1; ctx.beginPath();
+  for(const m of job.moves){ if(m.t==='travel'){ctx.moveTo(X(cx),Y(cy));ctx.lineTo(X(m.x),Y(m.y));} if(m.x!==undefined){cx=m.x;cy=m.y;} }
+  ctx.stroke(); ctx.setLineDash([]);
+  // tips
+  const multi=mode==='pen'&&state.pens.length>1;
+  for(const t of job.tips){
+    const path=()=>{ ctx.beginPath(); t.pts.forEach((q,i)=>i?ctx.lineTo(X(q[0]),Y(q[1])):ctx.moveTo(X(q[0]),Y(q[1]))); };
+    ctx.lineJoin='round';
+    if(multi && t.color){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=3.6; path(); ctx.stroke(); ctx.strokeStyle=t.color; ctx.lineWidth=1.8; path(); ctx.stroke(); continue; }
+    ctx.strokeStyle= t.kind==='cut'?cssVar('--tip'):cssVar('--mark'); ctx.lineWidth=t.kind==='cut'?1.6:1.4;
+    path(); ctx.stroke();
+  }
+  ctx.globalAlpha=1;
+  if(animOn) drawAnim(ctx,X,Y);
+  // copy labels
+  const s=jobSettings();
+  if(s.vary!=='none'){
+    ctx.fillStyle=cssVar('--tip'); ctx.font='600 13px Barlow, system-ui, sans-serif'; ctx.textAlign='center';
+    for(const c of job.copies){ if(c.bad) continue; ctx.fillText(String(c.k+1)+':  '+c.val,X((c.x0+c.x1)/2),Y(0)+18); }
+    ctx.textAlign='left';
+  }
+}
+
+function fileBase(){
+  const s=readSettings(); let n=(state.name||'design').replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9_-]+/g,'_');
+  if(s.vary!=='none') n+='_test_'+s.vary; return n;
+}
+async function save(){
+  if(!state.gcode) return;
+  const st=$('savestatus');
+  if(downloads){
+    try{ await downloads.save({filename:fileBase()+'.txt',data:state.gcode}); st.textContent='Saved as .txt. Rename it to .gcode before uploading to the Jackpot.'; }
+    catch(e){ const c=e&&e.code; st.textContent= c==='declined'?'Save cancelled.': c==='rate_limited'?'A save prompt is already open.':'Saving isn\u2019t available here. Open View G-code below and copy the text.'; }
+    return;
+  }
+  if(inViewer){ st.textContent='Saving isn\u2019t available here. Open View G-code below and copy the text.'; return; }
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([state.gcode],{type:'text/plain'}));
+  a.download=fileBase()+'.gcode'; document.body.append(a); a.click(); a.remove();
+  st.textContent='Saved '+a.download+'.';
+}
+
+document.body.dataset.mode=mode;
+$('m-knife').setAttribute('aria-pressed',String(mode==='knife'));
+$('m-pen').setAttribute('aria-pressed',String(mode==='pen'));
+loadSettings(); syncTestSteps(); tidyAll();
+try{ if(localStorage.getItem('dk-directions')==='closed') $('directions').open=false; }catch(e){}
+$('directions').addEventListener('toggle',()=>{ try{ localStorage.setItem('dk-directions',$('directions').open?'open':'closed'); }catch(e){} });
+if(readSettings().vary!=='none') $('calib').open=true;
+$('m-knife').addEventListener('click',()=>{ if(mode!=='knife') setMode('knife'); });
+$('m-pen').addEventListener('click',()=>{ if(mode!=='pen') setMode('pen'); });
+// Number fields only accept valid values: no minus signs or exponents, no more decimals than the field uses,
+// nothing above its maximum, and anything below its minimum snaps up when you leave the field.
+const INT_FIELDS=['passes','vcount'];
+const attrNum=(el,a,dflt)=>{ const v=parseFloat(el.getAttribute(a)); return isFinite(v)?v:dflt; };
+const maxDec=el=>{
+  if(INT_FIELDS.includes(el.id)) return 0;
+  return 2;
+};
+document.querySelectorAll('aside input[type=number]').forEach(el=>{
+  el.addEventListener('focus',()=>{ el.dataset.good=el.value; });
+  el.addEventListener('keydown',e=>{
+    if(['e','E','+','-'].includes(e.key)) e.preventDefault();
+    if(maxDec(el)===0 && (e.key==='.'||e.key===',')) e.preventDefault();
+  });
+  el.addEventListener('input',()=>{
+    const v=el.value; if(v==='') return;
+    const n=parseFloat(v), dec=(v.split('.')[1]||'').length;
+    if(!isFinite(n) || n<0 || n>attrNum(el,'max',Infinity) || dec>maxDec(el)){
+      el.value=el.dataset.good!==undefined?el.dataset.good:String(attrNum(el,'min',0));
+    } else el.dataset.good=v;
+  });
+  el.addEventListener('change',()=>{
+    let n=parseFloat(el.value); if(!isFinite(n)) n=parseFloat(el.dataset.good);
+    if(!isFinite(n)) n=attrNum(el,'min',0);
+    const mn=attrNum(el,'min',0), mx=attrNum(el,'max',Infinity);
+    n=Math.min(mx,Math.max(mn,n));
+    el.value=String(n); tidyNumber(el); el.dataset.good=el.value; update();
+  });
+});
+document.querySelectorAll('aside input, aside select, aside textarea').forEach(el=>{ if(el.id!=='file') el.addEventListener('input',update); });
+const PRESETS={knife:{offset:[0.1,0.05],depth:[0.1,0.05],overcut:[0,0.25],feed:[5,5]},pen:{depth:[0.3,0.1],feed:[15,5]}};
+$('vary').addEventListener('change',()=>{ const p=PRESETS[mode][$('vary').value]; if(p){ $('vstart').value=p[0]; $('vstep').value=p[1]; } syncTestSteps(); tidyAll(); update(); });
+FIXED2.forEach(id=>$(id).addEventListener('change',()=>tidyNumber($(id))));
+$('file').addEventListener('click',()=>{ if(state.raw && state.raw.kind==='test'){ clearShapes(); update(); } });
+$('file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ state.raw={kind:'svg',text:String(r.result)}; state.name=f.name; $('loaded').textContent='Loaded '+f.name; update(); };
+  r.onerror=()=>{ $('loaded').textContent='Could not read that file.'; };
+  r.readAsText(f); e.target.value='';
+});
+$('testbtn').addEventListener('click',()=>{ state.raw={kind:'test'}; state.name='test_shapes'; $('loaded').textContent='Loaded test shapes: square, narrow triangle, two short bars.'; update(); });
+let resetArmed=null;
+$('reset').addEventListener('click',()=>{
+  const b=$('reset');
+  const msg=$('resetmsg');
+  if(!resetArmed){ msg.textContent='Click again to reset'; resetArmed=setTimeout(()=>{resetArmed=null;msg.textContent='';},3000); return; }
+  clearTimeout(resetArmed); resetArmed=null;
+  delete SESSION[STORE[mode]];
+  clearShapes(); loadSettings(); syncTestSteps(); tidyAll(); update(); msg.textContent='';
+});
+$('aboutbtn').addEventListener('click',()=>{ const d=$('about'); if(d.showModal) d.showModal(); else d.setAttribute('open',''); });
+$('aboutclose').addEventListener('click',()=>$('about').close());
+$('about').addEventListener('click',e=>{ if(e.target===$('about')) $('about').close(); });
+$('save').addEventListener('click',save);
+$('aplay').addEventListener('click',togglePlay);
+$('ascrub').addEventListener('input',e=>{ if(anim.n<2) return; stopAnim(); anim.t=anim.total*(+e.target.value)/1000; anim.i=animIndex(anim.t); syncAnimUI(); draw(); });
+if(window.ResizeObserver) new ResizeObserver(()=>draw()).observe($('cv')); else window.addEventListener('resize',draw);
+update();
+if(window.claude && typeof window.claude.use==='function'){
+  inViewer=true;
+  window.claude.use('downloads').then(d=>{downloads=d;}).catch(()=>{});
+}
+</script>
+</body>
+</html>
