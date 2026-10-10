@@ -31,7 +31,7 @@ SOFTWARE.
 <meta property="og:title" content="G-Code-Inator">
 <meta property="og:description" content="Convert SVG drawings into G-code for drag knife cutting and pen plotting, with blade offset compensation and multi-color pen changes.">
 <meta name="theme-color" content="#2E6A4F">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232E6A4F'/%3E%3Cpath d='M15 47V19h17v26h17V17' fill='none' stroke='%23F7F5EC' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='49' cy='17' r='6.5' fill='%23F2C230'/%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232E6A4F'/%3E %3Cpath d='M44.6 20.4 A17 17 0 1 0 49 32 H34.5' fill='none' stroke='%231E2522' stroke-width='13' stroke-linecap='round' stroke-linejoin='round'/%3E %3Cpath d='M44.6 20.4 A17 17 0 1 0 49 32 H34.5' fill='none' stroke='%23F2C230' stroke-width='7.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,6 +68,9 @@ body[data-mode="knife"] .pen-only{display:none!important}
 .modesw button{border:0;border-radius:0;background:transparent;color:var(--ink);padding:8px 16px}
 .modesw button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
 .topr{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+header .brand{display:flex;align-items:center;gap:14px}
+header .logo{width:92px;height:auto;flex:none}
+@media (max-width:860px){header .logo{width:70px}}
 header p.tagline{margin:2px 0 0;color:var(--muted);font-size:.98rem}
 header.top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
 .wrap{display:grid;grid-template-columns:minmax(300px,390px) 1fr;gap:20px;padding:12px 24px 32px;max-width:1400px;margin:0 auto;align-items:start}
@@ -159,9 +162,12 @@ body:not(.multipen) .multi-only{display:none}
 </head>
 <body>
 <header class="top">
-  <div>
+  <div class="brand">
+    <svg class="logo" aria-hidden="true" viewBox="23 0 154 104"> <path d="M60 64 l-6 22 h28 l-6 -22" fill="#9AA39E" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M48 96 q20 -14 40 0 z" fill="#6E7873" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="44" y="94" width="48" height="6" rx="3" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><g transform="rotate(-14 68 64)"> <rect x="34" y="27" width="11" height="40" rx="5" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="42" y="30" width="54" height="34" rx="9" fill="#3E7D5C" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M52 37h8M76 37h8M52 57h8M76 57h8" stroke="#2E6A4F" stroke-width="3" stroke-linecap="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#1E2522" stroke-width="7.6" stroke-linecap="round" stroke-linejoin="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#F2C230" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/> <path d="M94 34l12 7v12l-12 7z" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <!-- drag knife holder: knurled nut, flange, stepped silver body, blade --> <rect x="106" y="36" width="13" height="22" rx="2.5" fill="#F2C230" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M109.5 38v18M113 38v18M116.5 38v18" stroke="#C99A1B" stroke-width="1.6"/> <rect x="119" y="33.5" width="4.5" height="27" rx="1.5" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M123.5 39 H143 V55 H123.5 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M143 42 H158 Q166 42 167 47 Q166 52 158 52 H143 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M126 42.5 H140 M146 44.8 H157" stroke="#EEF2F2" stroke-width="2.2" stroke-linecap="round"/> <path d="M166 45.4 L176 47 L166 48.6 Z" fill="#1E2522" stroke="#1E2522" stroke-width="1.2" stroke-linejoin="round"/></g></svg>
+    <div>
     <h1>G-Code-Inator</h1>
     <p class="tagline">SVG in, G-code out. Drag knife cutting and pen plotting for most hobby CNC machines.</p>
+    </div>
   </div>
   <div class="topr">
     <div class="modesw" role="group" aria-label="Tool">
