@@ -2,11 +2,13 @@
 
 SVG in, G-code out. Drag knife cutting and pen plotting for most hobby CNC machines.
 
+**[Try it live](https://daviddarts.github.io/gcodeinator/)**
+
 ![G-Code-Inator previewing a drag knife cut](screenshot.png)
 
-G-Code-Inator converts SVG drawings into G-code for drag knife cutting and pen plotting. The generated files are designed to work with GRBL, FluidNC, grblHAL and most other hobby CNC controllers.
+G-Code-Inator converts SVG drawings into G-code for drag knife cutting and pen plotting. Developed and tested on a LowRider 4 running FluidNC, it uses standard G-code commands, so the generated files should work on GRBL, grblHAL and other GRBL-compatible controllers.
 
-It runs entirely in the browser. **[Try it live →](https://daviddarts.github.io/gcodeinator/)**
+It runs entirely in the browser.
 
 ## Drag knife
 

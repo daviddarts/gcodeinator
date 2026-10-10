@@ -112,6 +112,8 @@ dialog#about li{margin:4px 0}
 dialog#about{max-height:calc(100vh - 32px);overflow:auto}
 .dlg-head{display:flex;justify-content:space-between;align-items:center}
 .dlg-head h2{margin:0}
+.dlg-foot a{color:inherit;text-decoration:underline;text-underline-offset:2px}
+.dlg-foot a:hover{color:var(--ink)}
 .dlg-foot{margin:18px 0 0;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.86rem}
 #svghost{position:absolute;left:-20000px;top:0;width:10px;height:10px;overflow:hidden;opacity:0;pointer-events:none}
 .status:empty{display:none}
@@ -292,14 +294,14 @@ body:not(.multipen) .multi-only{display:none}
 
 <dialog id="about" aria-labelledby="about-h">
   <div class="dlg-head"><h2 id="about-h">About</h2><button class="ghost" id="aboutclose" type="button" aria-label="Close">Close</button></div>
-  <p>G-Code-Inator converts SVG drawings into G-code for drag knife cutting and pen plotting. The generated files are designed to work with GRBL, FluidNC, grblHAL and most other hobby CNC controllers.</p>
+  <p>G-Code-Inator converts SVG drawings into G-code for drag knife cutting and pen plotting. Developed and tested on a LowRider 4 running FluidNC, it uses standard G-code commands, so the generated files should work on GRBL, grblHAL and other GRBL-compatible controllers.</p>
   <h3>Drag knife</h3>
   <p>A drag knife works like a shopping cart caster wheel, trailing behind its central pivot so the cutting tip lags behind the machine head. Unadjusted toolpaths force this trailing tip to round off sharp corners and leave gaps where cuts close. This converter translates SVG vectors into G-code with automatic swivel loops and overcut extensions, producing sharp corners and clean, complete cutouts.</p>
   <h3>Pen</h3>
   <p>Converts SVG vectors into G-code for pen plotting, with full support for multi-color drawings. Paths are grouped and plotted sequentially by stroke color, with automated pauses for swapping pens between colors. At each pen change, the machine lowers to paper height so the new pen can be seated without re-zeroing Z.</p>
   <h3>Preparing an SVG</h3>
   <p>Convert everything (shapes, text, etc.) to paths before saving. Only outlines are used: fills, line thickness and hidden layers are ignored.</p>
-  <p class="dlg-foot">Vibe coded by David Darts · MIT License © 2026</p>
+  <p class="dlg-foot">Vibe coded by David Darts · MIT License © 2026 · <a href="https://github.com/daviddarts/gcodeinator" target="_blank" rel="noopener">Source on GitHub</a></p>
 </dialog>
 <div id="svghost" aria-hidden="true"></div>
 <script>
