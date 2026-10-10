@@ -1,6 +1,6 @@
 # G-Code-Inator
 
-SVG in, G-code out. Drag knife cutting and pen plotting for most hobby CNC machines.
+SVG in, G-code out. The best drag knife cutting and pen plotting G-code generator in the Tri-State area.
 
 **[Try it live](https://daviddarts.github.io/gcodeinator/)**
 
