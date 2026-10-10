@@ -41,19 +41,20 @@ SOFTWARE.
   --accent:#2E6A4F; --accent-ink:#FFFFFF; --warn-bg:#FFF4D6; --warn-ink:#6B4E00;
   --mat:#2E6A4F; --mat-minor:rgba(255,255,255,.07); --mat-major:rgba(255,255,255,.2);
   --tip:#F7F5EC; --holder:#F2C230; --travel:rgba(255,255,255,.35); --mark:#9FD4B8;
+  color-scheme:light;
   box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#131816; --panel:#1C2320; --ink:#E4EBE7; --muted:#9AA8A1; --line:#2E3934;
     --accent:#4C9A74; --accent-ink:#0E1311; --warn-bg:#3A3015; --warn-ink:#F2D58A;
-    --mat:#1F4A37;
+    --mat:#1F4A37; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#131816; --panel:#1C2320; --ink:#E4EBE7; --muted:#9AA8A1; --line:#2E3934;
   --accent:#4C9A74; --accent-ink:#0E1311; --warn-bg:#3A3015; --warn-ink:#F2D58A;
-  --mat:#1F4A37;
+  --mat:#1F4A37; color-scheme:dark;
 }
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:inherit}
@@ -82,7 +83,17 @@ h2{font-size:1.05rem;font-weight:600;margin:0 0 10px}
 .row label{font-weight:500}
 .hint{grid-column:1/-1;color:var(--muted);font-size:.86rem;margin-top:-2px}
 input[type=number],select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%}
-input[type=number]{text-align:right}
+input[type=number]{text-align:right;-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.num{position:relative;display:block}
+.num input{padding-right:32px}
+.num .step{position:absolute;right:1px;width:25px;height:calc(50% - 1px);padding:0;border:0;border-left:1px solid var(--line);border-radius:0;background:transparent;color:var(--muted);display:flex;align-items:center;justify-content:center;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.num .step.up{top:1px;border-top-right-radius:5px}
+.num .step.dn{bottom:1px;border-top:1px solid var(--line);border-bottom-right-radius:5px}
+.num .step svg{width:10px;height:6px;fill:currentColor;pointer-events:none}
+.num .step:hover:not(:disabled){background:var(--line);color:var(--ink)}
+.num .step:disabled{opacity:.35;cursor:default}
+@media (pointer:coarse){.num input{padding-right:40px}.num .step{width:33px}}
 textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.85rem;min-height:72px;resize:vertical}
 .check{display:grid;grid-template-columns:22px 1fr;gap:2px 8px;margin:10px 0;align-items:start}
 .check input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--accent)}
@@ -594,7 +605,7 @@ function jobStats(job){
 <script>
 const DEF={mirror:false,margin:4,offset:0.4,overcut:0.5,depth:0.5,passes:1,pextra:0.15,precut:true,startlong:true,innerfirst:true,
   feed:20,plunge:5,safez:2,vary:'none',vstart:0.1,vstep:0.05,vcount:5,gap:6,gstart:'G21\nG90\nG94',gend:'G0 Z10\nG0 X0 Y0\nM30'};
-const DEF_PEN={mirror:false,margin:3,depth:0.5,feed:25,plunge:10,safez:2,optimize:true,
+const DEF_PEN={mirror:false,margin:4,depth:0.5,feed:25,plunge:10,safez:2,optimize:true,
   vary:'none',vstart:0.3,vstep:0.1,vcount:5,gap:6,gstart:'G21\nG90\nG94',gend:'G0 Z10\nG0 X0 Y0\nM30'};
 const FIXED={tol:0.03,thresh:5,preswivel:true};
 const PEN_FIXED={offset:0,overcut:0,passes:1,pextra:0,preswivel:false,precut:false,startlong:false,innerfirst:false,thresh:5};
@@ -888,6 +899,7 @@ function settingErrors(s){
   return e;
 }
 function update(){
+  refreshSteppers();
   saveSettings(readSettings()); let s=jobSettings(); const LABEL=LABELS[mode];
   ['offset','overcut','depth','feed'].forEach(k=>$('r-'+k).classList.toggle('off',s.vary===k));
   $('testfields').classList.toggle('off',s.vary==='none');
@@ -1165,6 +1177,42 @@ document.querySelectorAll('aside input[type=number]').forEach(el=>{
     el.value=String(n); tidyNumber(el); el.dataset.good=el.value; update();
   });
 });
+// Our own up/down arrows, so they look the same in every browser and theme and are always visible.
+const STEP_SVG={up:'<svg viewBox="0 0 10 6"><path d="M5 0L10 6H0z"/></svg>',dn:'<svg viewBox="0 0 10 6"><path d="M0 0H10L5 6z"/></svg>'};
+var steppers=[];
+function refreshSteppers(){
+  steppers.forEach(({el,up,dn})=>{
+    const v=parseFloat(el.value), mn=attrNum(el,'min',-Infinity), mx=attrNum(el,'max',Infinity);
+    up.disabled=isFinite(v)&&v>=mx; dn.disabled=isFinite(v)&&v<=mn;
+  });
+}
+document.querySelectorAll('aside input[type=number]').forEach(el=>{
+  const wrap=document.createElement('span'); wrap.className='num';
+  el.parentNode.insertBefore(wrap,el); wrap.appendChild(el);
+  const mk=dir=>{
+    const b=document.createElement('button'); b.type='button'; b.className='step '+dir; b.tabIndex=-1;
+    b.setAttribute('aria-hidden','true'); b.innerHTML=STEP_SVG[dir]; wrap.appendChild(b);
+    let t=null;
+    const stop=()=>{ clearTimeout(t); t=null; };
+    const once=()=>{
+      if(b.disabled){ stop(); return; }
+      if(el.dataset.good===undefined) el.dataset.good=el.value;
+      try{ dir==='up'?el.stepUp():el.stepDown(); }catch(_){ return; }
+      el.dispatchEvent(new Event('input',{bubbles:true}));
+      el.dispatchEvent(new Event('change',{bubbles:true}));
+    };
+    b.addEventListener('pointerdown',e=>{
+      if(e.button!==0) return; e.preventDefault(); once();
+      const rpt=()=>{ once(); if(t!==null) t=setTimeout(rpt,70); };
+      t=setTimeout(rpt,400);
+    });
+    ['pointerup','pointerleave','pointercancel'].forEach(ev=>b.addEventListener(ev,stop));
+    b.addEventListener('contextmenu',e=>e.preventDefault());
+    return b;
+  };
+  steppers.push({el,up:mk('up'),dn:mk('dn')});
+});
+refreshSteppers();
 document.querySelectorAll('aside input, aside select, aside textarea').forEach(el=>{ if(el.id!=='file') el.addEventListener('input',update); });
 const PRESETS={knife:{offset:[0.1,0.05],depth:[0.1,0.05],overcut:[0,0.25],feed:[5,5]},pen:{depth:[0.3,0.1],feed:[15,5]}};
 $('vary').addEventListener('change',()=>{ const p=PRESETS[mode][$('vary').value]; if(p){ $('vstart').value=p[0]; $('vstep').value=p[1]; } syncTestSteps(); tidyAll(); update(); });
