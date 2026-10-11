@@ -1,6 +1,6 @@
 # G-Code-Inator
 
-SVG in, G-code out. The best drag knife cutting and pen plotting G-code generator in the Tri-State area.
+SVG in, G-code out. For CNC drag knife cutting and pen plotting.
 
 **[Try it live](https://daviddarts.github.io/gcodeinator/)**
 
@@ -18,7 +18,11 @@ Calibration cuts a row of test shapes, changing one setting between them, to dia
 
 ## Pen
 
-Converts SVG vectors into G-code for pen plotting, with full support for multi-color drawings. Paths are grouped and plotted sequentially by stroke color, with automated pauses for swapping pens between colors. At each pen change, the machine lowers to paper height so the new pen can be seated without re-zeroing Z.
+Converts SVG vectors into G-code for pen plotting, with full support for multi-color drawings. Paths are grouped and plotted sequentially by stroke color, with automated pauses for swapping pens between colors. At each pen change, the machine lowers to paper height so the new pen can be seated without re-zeroing Z. Closed shapes can also be filled with lines or cross-hatching, with adjustable line spacing and angle.
+
+## Hidden Self-Destruct Button
+
+G-Code-Inator includes a Dr. Doofenshmirtz (Phineas and Ferb) inspired self-destruct button hidden behind the G-Code-Inator logo. He adds these buttons to all of his "Inators" (evil inventions) and is invariably tricked into activating the button before the end of the episode. Double-click the logo to reveal it.
 
 ## License
 

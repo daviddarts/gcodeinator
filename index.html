@@ -62,6 +62,9 @@ html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Barlow,"Segoe UI",system-ui,-apple-system,sans-serif;font-size:16px;line-height:1.45}
 header{padding:20px 24px 8px;max-width:1400px;margin:0 auto}
 h1{font-size:1.75rem;font-weight:700;margin:0;letter-spacing:-.01em}
+/* Title drawn like a cross-hatched pen plot: outlined letters filled with a grid. */
+header h1{--g:5px;font-size:2.8rem;line-height:1.05;letter-spacing:.01em;background:repeating-linear-gradient(0deg,#F2C230 0 1px,transparent 1px var(--g)),repeating-linear-gradient(90deg,#F2C230 0 1px,transparent 1px var(--g));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;-webkit-text-stroke:1.5px #C99A1B}
+@media (max-width:860px){header h1{--g:4px;font-size:2.1rem;-webkit-text-stroke-width:1.2px}}
 header p{margin:2px 0 0;color:var(--muted)}
 body[data-mode="pen"] .knife-only{display:none!important}
 body[data-mode="knife"] .pen-only{display:none!important}
@@ -111,6 +114,14 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .penlist .num{width:18px;color:var(--muted);font-variant-numeric:tabular-nums}
 .penlist .sw{width:18px;height:18px;border-radius:50%;border:1px solid var(--line);flex:none}
 .penlist .nm{flex:1}
+.lblwrap{display:flex;align-items:center;gap:6px;min-width:0}
+.lblwrap #dsreset{margin-left:auto}
+button.mini{width:28px;height:28px;padding:0;justify-content:center;border-radius:50%;flex:none}
+button.warnbtn{color:var(--warn-ink);border-color:transparent}
+button.warnbtn[aria-expanded='true']{background:var(--warn-bg)}
+.sizenote{margin:-2px 0 8px;padding:8px 10px;border-radius:7px;background:var(--warn-bg);color:var(--warn-ink)}
+.penlist .pfill{display:flex;align-items:center;gap:5px;font-size:.88rem;color:var(--muted);cursor:pointer}
+.penlist .pfill input{width:16px;height:16px;margin:0;accent-color:var(--accent)}
 .penlist button{padding:2px 8px;font-size:.9rem;line-height:1.4}
 .iconbtn{display:inline-flex;align-items:center;gap:6px;padding:8px 10px}
 .iconbtn svg{display:block}
@@ -138,17 +149,17 @@ main{display:flex;flex-direction:column;gap:14px;min-width:0}
 .matbox{background:var(--mat);border-radius:12px;padding:10px;position:relative}
 canvas{display:block;width:100%;height:min(62vh,620px);border-radius:6px}
 @media (max-width:860px){canvas{height:52vh}}
-.animbar{display:flex;align-items:center;gap:10px;padding:8px 4px 0;color:#E8F1EC;font-size:.88rem}
+.animbar{display:flex;align-items:center;gap:10px;padding:8px 4px 0;color:var(--mat-text);font-size:.88rem}
 .abtn svg{pointer-events:none}
-.abtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border-radius:50%;background:#F7F5EC;border-color:#F7F5EC;color:#1E2522;flex:none}
+.abtn{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;padding:0;border-radius:50%;background:var(--btn-bg);border-color:var(--btn-bg);color:var(--btn-ink);flex:none}
 .scrubwrap{position:relative;flex:1;min-width:60px;display:flex;align-items:center}
 .animbar input[type=range]{width:100%;margin:0;accent-color:#F2C230}
 #amarks{position:absolute;left:8px;right:8px;top:0;bottom:0;pointer-events:none}
 .amark{position:absolute;top:2px;bottom:2px;width:10px;margin-left:-5px;padding:0;border:0;background:transparent;pointer-events:auto;cursor:pointer}
 .amark::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:4px;border-radius:2px;background:var(--c);box-shadow:0 0 0 1.5px #F7F5EC}
-.animbar select{width:auto;background:rgba(0,0,0,.2);color:#E8F1EC;border-color:rgba(255,255,255,.25);padding:4px 6px}
+.animbar select{width:auto;background:var(--ctl-bg);color:var(--mat-text);border-color:var(--ctl-line);padding:4px 6px}
 #atime{font-variant-numeric:tabular-nums;white-space:nowrap}
-.legend{display:flex;gap:16px;flex-wrap:wrap;color:#E8F1EC;font-size:.88rem;padding:8px 4px 2px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;align-items:center;color:var(--mat-text);font-size:.88rem;padding:8px 4px 2px}
 .legend > span::before{content:"";display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:6px;border-radius:2px;background:var(--c)}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .stats{display:flex;gap:22px;flex-wrap:wrap;margin-bottom:10px}
@@ -168,7 +179,7 @@ details textarea{min-height:240px;margin-top:8px}
 .steps li{margin:4px 0}
 .substeps{margin:4px 0 0;padding-left:18px}
 body:not(.multipen) .multi-only{display:none}
-.empty{color:#E8F1EC;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;pointer-events:none;font-size:1.05rem}
+.empty{color:var(--mat-text);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;pointer-events:none;font-size:1.05rem}
 
 /* Easter egg: double-click the logo and it becomes a self-destruct button. Purely visual; app state is never touched. */
 .logowrap{position:relative;flex:none;display:block;line-height:0;perspective:500px}
@@ -218,15 +229,35 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   #sdfx.boom .sd-flash,#sdfx.smoke .sd-smoke i,#sdfx .sd-count.tick svg{animation:none}
   header .logo,#sdbtn,.logowrap.armed #sdbtn,#sdfx .sd-msg{transition:none}
 }
+
+/* Preview colors. */
+:root{--mat-num:rgba(255,255,255,.42);--mat-text:#E8F1EC;--halo:rgba(255,255,255,.6);--halo-strong:rgba(255,255,255,.75);--pen-mark:var(--holder);--ctl-bg:rgba(0,0,0,.2);--ctl-line:rgba(255,255,255,.25);--btn-bg:#F7F5EC;--btn-ink:#1E2522;--badge-bg:rgba(0,0,0,.22)}
+.toolbadge{margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;background:var(--badge-bg);font-weight:600}
+.toolbadge svg{flex:none}
+.legend > .toolbadge::before{display:none}
+/* Main buttons drawn like the logo: thick dark outline, hard shadow, logo colors. */
+:root{--ol:#1E2522}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--ol:#050706} }
+:root[data-theme="dark"]{--ol:#050706}
+.filebtn,#save,#testbtn,#reset,#aboutbtn,#aboutclose{font-weight:700;border:2px solid var(--ol);border-radius:10px;box-shadow:0 3px 0 var(--ol);transition:transform .06s,box-shadow .06s}
+.filebtn{background:#3E7D5C;color:#F7F5EC}
+#save{background:#F2C230;color:#1E2522}
+#testbtn,#reset,#aboutbtn,#aboutclose{background:var(--panel);color:var(--ink)}
+.filebtn:active,#save:active:not(:disabled),#testbtn:active,#reset:active,#aboutbtn:active,#aboutclose:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+#save:disabled{box-shadow:0 3px 0 var(--ol)}
+.modesw{border:2px solid var(--ol);border-radius:10px;box-shadow:0 3px 0 var(--ol);background:var(--panel)}
+.modesw button{font-weight:700}
+.modesw button+button{border-left:2px solid var(--ol)}
+.modesw button[aria-pressed="true"]{background:#3E7D5C;color:#F7F5EC}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="brand">
-    <span class="logowrap" id="logowrap"><svg class="logo" aria-hidden="true" viewBox="23 0 154 104"> <path d="M60 64 l-6 22 h28 l-6 -22" fill="#9AA39E" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M48 96 q20 -14 40 0 z" fill="#6E7873" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="44" y="94" width="48" height="6" rx="3" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><g transform="rotate(-14 68 64)"> <rect x="34" y="27" width="11" height="40" rx="5" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="42" y="30" width="54" height="34" rx="9" fill="#3E7D5C" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M52 37h8M76 37h8M52 57h8M76 57h8" stroke="#2E6A4F" stroke-width="3" stroke-linecap="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#1E2522" stroke-width="7.6" stroke-linecap="round" stroke-linejoin="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#F2C230" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/> <path d="M94 34l12 7v12l-12 7z" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <!-- drag knife holder: knurled nut, flange, stepped silver body, blade --> <rect x="106" y="36" width="13" height="22" rx="2.5" fill="#F2C230" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M109.5 38v18M113 38v18M116.5 38v18" stroke="#C99A1B" stroke-width="1.6"/> <rect x="119" y="33.5" width="4.5" height="27" rx="1.5" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M123.5 39 H143 V55 H123.5 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M143 42 H158 Q166 42 167 47 Q166 52 158 52 H143 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M126 42.5 H140 M146 44.8 H157" stroke="#EEF2F2" stroke-width="2.2" stroke-linecap="round"/> <path d="M166 45.4 L176 47 L166 48.6 Z" fill="#1E2522" stroke="#1E2522" stroke-width="1.2" stroke-linejoin="round"/></g></svg><button type="button" id="sdbtn" aria-label="Self-destruct" tabindex="-1"><svg viewBox="0 0 140 96" aria-hidden="true"><text x="70" y="30" text-anchor="middle" textLength="128" lengthAdjust="spacingAndGlyphs" font-family="Bangers,Barlow,system-ui,sans-serif" font-size="31" letter-spacing="1" fill="#F2C230" stroke="#1E2522" stroke-width="6" stroke-linejoin="round" paint-order="stroke">SELF-DESTRUCT</text><path d="M24 70v8a46 14 0 0 0 92 0v-8z" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><ellipse cx="70" cy="70" rx="46" ry="14" fill="#9AA39E" stroke="#1E2522" stroke-width="3"/><ellipse cx="70" cy="69" rx="38" ry="10.5" fill="#1E2522"/><g class="cap"><path d="M37 56v11a33 10 0 0 0 66 0v-11z" fill="#9E2219" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><ellipse cx="70" cy="56" rx="33" ry="10" fill="#D6372B" stroke="#1E2522" stroke-width="3"/><ellipse cx="58" cy="53" rx="10" ry="3" fill="#F27A6E"/></g></svg></button></span>
+    <span class="logowrap" id="logowrap"><svg class="logo" aria-hidden="true" viewBox="23 0 154 104"> <path d="M60 64 l-6 22 h28 l-6 -22" fill="#9AA39E" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M48 96 q20 -14 40 0 z" fill="#6E7873" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="44" y="94" width="48" height="6" rx="3" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><g transform="rotate(-14 68 64)"> <rect x="34" y="27" width="11" height="40" rx="5" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="42" y="30" width="54" height="34" rx="9" fill="#3E7D5C" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M52 37h8M76 37h8M52 57h8M76 57h8" stroke="#2E6A4F" stroke-width="3" stroke-linecap="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#1E2522" stroke-width="7.6" stroke-linecap="round" stroke-linejoin="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#F2C230" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/> <path d="M94 34l12 7v12l-12 7z" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <!-- drag knife holder: knurled nut, flange, stepped silver body, blade --> <rect x="106" y="36" width="13" height="22" rx="2.5" fill="#F2C230" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M109.5 38v18M113 38v18M116.5 38v18" stroke="#C99A1B" stroke-width="1.6"/> <rect x="119" y="33.5" width="4.5" height="27" rx="1.5" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M123.5 39 H143 V55 H123.5 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M143 42 H158 Q166 42 167 47 Q166 52 158 52 H143 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M126 42.5 H140 M146 44.8 H157" stroke="#EEF2F2" stroke-width="2.2" stroke-linecap="round"/> <path d="M166 45.4 L176 47 L166 48.6 Z" fill="#1E2522" stroke="#1E2522" stroke-width="1.2" stroke-linejoin="round"/></g></svg><button type="button" id="sdbtn" aria-label="Self-destruct" tabindex="-1"><svg viewBox="0 0 140 96" aria-hidden="true"><text x="70" y="30" text-anchor="middle" textLength="128" lengthAdjust="spacingAndGlyphs" font-family="Bangers,Barlow,system-ui,sans-serif" font-size="31" letter-spacing="1" fill="#F2C230" stroke="#1E2522" stroke-width="6" stroke-linejoin="round" paint-order="stroke">SELF-DESTRUCT</text><path d="M24 70v8a46 14 0 0 0 92 0v-8z" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><ellipse cx="70" cy="70" rx="46" ry="14" fill="#9AA39E" stroke="#1E2522" stroke-width="3"/><ellipse cx="70" cy="69" rx="38" ry="10.5" fill="#1E2522"/><defs><clipPath id="sdhole"><rect x="0" y="0" width="140" height="69"/><ellipse cx="70" cy="69" rx="38" ry="10.5"/></clipPath></defs><g clip-path="url(#sdhole)"><g class="cap"><path d="M37 56v11a33 10 0 0 0 66 0v-11z" fill="#9E2219" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><ellipse cx="70" cy="56" rx="33" ry="10" fill="#D6372B" stroke="#1E2522" stroke-width="3"/><ellipse cx="58" cy="53" rx="10" ry="3" fill="#F27A6E"/></g></g></svg></button></span>
     <div>
     <h1>G-Code-Inator</h1>
-    <p class="tagline">SVG in, <span class="nw">G-code</span> out. The best drag knife cutting and pen plotting <span class="nw">G-code</span> generator in the Tri-State area.</p>
+    <p class="tagline">SVG in, <span class="nw">G-code</span> out. For CNC drag knife cutting and pen plotting.</p>
     </div>
   </div>
   <div class="topr">
@@ -247,6 +278,15 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
     </div>
     <div class="status" id="loaded"></div>
     <div class="check"><input type="checkbox" id="mirror"><label for="mirror">Flip horizontal</label></div>
+    <div class="check"><input type="checkbox" id="rotate"><label for="rotate">Rotate 90°</label></div>
+    <div id="r-size" hidden>
+      <div class="row"><span class="lblwrap"><label for="dw">Width (mm)</label>
+        <button type="button" class="ghost iconbtn mini warnbtn" id="dswarn" hidden aria-expanded="false" aria-controls="sizenote" aria-label="About this design's size" title="About this design's size"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 22 20H2z"/><path d="M12 10v4"/><path d="M12 17.2v.1"/></svg></button>
+        <button type="button" class="ghost iconbtn mini" id="dsreset" hidden aria-label="Reset to original size" title="Reset to original size"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 3v5h5"/></svg></button></span>
+        <input type="number" id="dw" step="1" min="1" max="5000"></div>
+      <div class="row"><label for="dh">Height (mm)</label><input type="number" id="dh" step="1" min="1" max="5000"></div>
+      <div class="hint sizenote" id="sizenote" hidden>This SVG has no size in mm, so 1 unit is treated as 1 pixel (96 per inch).</div>
+    </div>
     <div class="row"><label for="margin">Space before design (mm)</label><input type="number" id="margin" step="0.5" min="0">
       <div class="hint">Gap between your zero point and the design.</div></div>
   </section>
@@ -270,6 +310,15 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
     <div class="check knife-only"><input type="checkbox" id="innerfirst"><label for="innerfirst">Cut inner shapes first</label></div>
     <div class="check pen-only"><input type="checkbox" id="optimize"><label for="optimize">Shorter travel</label>
       <div class="hint">Reorders the lines to reduce the moves between them.</div></div>
+    <div class="row pen-only" style="grid-template-columns:1fr 150px"><label for="infill">Infill</label><select id="infill"><option value="off">Off</option><option value="lines">Lines</option><option value="cross">Cross-hatch</option></select>
+      <div class="hint">Fills closed shapes with lines. White shapes stay empty.</div></div>
+    <div class="row pen-only" id="r-hspace"><label for="hspace">Line spacing (mm)</label><input type="number" id="hspace" step="0.1" min="0.2" max="50">
+      <div class="hint">Distance between fill lines. About the pen's line width gives a solid fill.</div></div>
+    <div class="row pen-only" id="r-hangle"><label for="hangle">Line angle (°)</label><input type="number" id="hangle" step="5" min="0" max="180"></div>
+    <div class="check pen-only" id="r-hout"><input type="checkbox" id="hout"><label for="hout">Outline filled shapes</label>
+      <div class="hint">Draws the edge of each filled shape for a crisp finish.</div></div>
+    <div class="check pen-only"><input type="checkbox" id="join"><label for="join">Join touching lines</label>
+      <div class="hint">Lines that meet end to end are drawn as one stroke, with fewer pen lifts.</div></div>
     <div class="pen-only" id="penbox" hidden>
       <h3 class="subh">Pen order</h3>
       <div class="hint">The machine pauses for a pen change between colors.</div>
@@ -322,6 +371,8 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
       <span id="leg-line" style="--c:var(--tip)"><span class="knife-only">Blade tip</span><span class="pen-only">Pen line</span></span>
       <span class="knife-only" style="--c:var(--holder)">Holder center</span>
       <span style="--c:var(--travel)">Travel</span>
+      <span class="toolbadge knife-only"><svg width="18" height="18" viewBox="-3 -3 26 26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><g transform="rotate(45 10 10) translate(-3 1)"><path d="M1.5 15.5h23L19 3.5h-4.2a1.8 1.8 0 0 1-3.6 0H7z"/><path d="M4.5 12.5h17" stroke-width="1.3" opacity=".6"/></g><path d="M-2 22H22" stroke-width="1.6" opacity=".5"/></svg>Drag knife</span>
+      <span class="toolbadge pen-only"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3l4 4L8 20H4v-4z"/></svg>Pen</span>
     </div>
   </div>
 
@@ -330,7 +381,7 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
     <ul class="copies" id="copies"></ul>
     <div id="warns"></div>
     <div class="btns">
-      <button id="save" type="button" disabled>Save G-code</button>
+      <button id="save" type="button" disabled>Save G-Code</button>
     </div>
     <div class="status" id="savestatus"></div>
     <details id="directions" open>
@@ -364,9 +415,9 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   <h3>Drag knife</h3>
   <p>A drag knife works like a shopping cart caster wheel, trailing behind its central pivot so the cutting tip lags behind the machine head. Unadjusted toolpaths force this trailing tip to round off sharp corners and leave gaps where cuts close. This converter translates SVG vectors into G-code with automatic swivel loops and overcut extensions, producing sharp corners and clean, complete cutouts.</p>
   <h3>Pen</h3>
-  <p>Converts SVG vectors into G-code for pen plotting, with full support for multi-color drawings. Paths are grouped and plotted sequentially by stroke color, with automated pauses for swapping pens between colors. At each pen change, the machine lowers to paper height so the new pen can be seated without re-zeroing Z.</p>
+  <p>Converts SVG vectors into G-code for pen plotting, with full support for multi-color drawings. Paths are grouped and plotted sequentially by stroke color, with automated pauses for swapping pens between colors. At each pen change, the machine lowers to paper height so the new pen can be seated without re-zeroing Z. Closed shapes can also be filled with lines or cross-hatching, with adjustable line spacing and angle.</p>
   <h3>Preparing an SVG</h3>
-  <p>Convert everything (shapes, text, etc.) to paths before saving. Only outlines are used: fills, line thickness and hidden layers are ignored.</p>
+  <p>Convert everything (shapes, text, etc.) to paths before saving. Only outlines are cut or drawn, except in pen mode with Infill on, where closed shapes are filled with lines. Line thickness and hidden layers are ignored. If the size is wrong, set Width or Height under Design.</p>
   <p class="sd-warn"><b>Warning:</b> Do not double-click the G-Code-Inator logo. There is definitely no self-destruct button.</p>
   <p class="dlg-foot">Vibe coded by David Darts · MIT License © 2026 · <a href="https://github.com/daviddarts/gcodeinator" target="_blank" rel="noopener">Source on GitHub</a></p>
 </dialog>
@@ -375,7 +426,7 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
 // ===== Core geometry =====
 function dist(a,b){return Math.hypot(b[0]-a[0],b[1]-a[1]);}
 
-function cleanPaths(raw, colors){
+function cleanPaths(raw, colors, meta){
   const out=[];
   for(let ri=0;ri<raw.length;ri++){ const p=raw[ri];
     const pts=[];
@@ -386,7 +437,9 @@ function cleanPaths(raw, colors){
       closed=true; pts[pts.length-1]=[pts[0][0],pts[0][1]];
       if(pts.length<4) continue;
     }
-    out.push(colors?{pts,closed,color:colors[ri]}:{pts,closed});
+    const o=colors?{pts,closed,color:colors[ri]}:{pts,closed};
+    if(meta&&meta[ri]) Object.assign(o,meta[ri]);
+    out.push(o);
   }
   return out;
 }
@@ -470,9 +523,9 @@ function compensate(pts, prm, lastDir, opt, zsteps){
 function buildJob(base, s){
   const out={moves:[],tips:[],copies:[],warnings:[]};
   if(!base || !base.length) return out;
-  let paths=base.map(p=>({pts:p.pts.map(q=>[s.mirror?-q[0]:q[0], q[1]]),closed:p.closed,color:p.color}));
+  let paths=base.map(p=>({...p,pts:p.pts.map(q=>[s.mirror?-q[0]:q[0], q[1]])}));
   const bb=bbox(paths);
-  paths=paths.map(p=>({pts:p.pts.map(q=>[q[0]-bb.x0+s.margin,q[1]-bb.y0+s.margin]),closed:p.closed,color:p.color}));
+  paths=paths.map(p=>({...p,pts:p.pts.map(q=>[q[0]-bb.x0+s.margin,q[1]-bb.y0+s.margin])}));
   const w=bb.w, h=bb.h;
   const opt={threshRad:s.thresh*Math.PI/180, preswivel:s.preswivel};
   let lastDir=null;
@@ -497,12 +550,26 @@ function buildJob(base, s){
     const dx=k*(w+s.gap);
     const cp={k,val,prm,x0:s.margin+dx,x1:s.margin+dx+w,y0:s.margin,y1:s.margin+h};
     out.copies.push(cp);
-    const allShapes=paths.map(p=>({pts:p.pts.map(q=>[q[0]+dx,q[1]]),closed:p.closed,color:p.color}));
+    const allShapes=paths.map(p=>({...p,pts:p.pts.map(q=>[q[0]+dx,q[1]])}));
     const pm=s.penMap||{};
-    const groups=(s.pens&&s.pens.length>1)?s.pens.map(c=>({c,g:allShapes.filter(p=>(pm[p.color]||p.color)===c)})).filter(o=>o.g.length):[{c:null,g:allShapes}];
+    // Pen infill: hatch lines, plus outlines with anything hidden under a shape on top removed.
+    const fillParts=(s.infill&&s.infill!=='off')?makeInfill(allShapes,s):null;
+    const srcShapes=fillParts?fillParts.outlines:allShapes, srcHatch=fillParts?fillParts.hatches:[];
+    const groups=(s.pens&&s.pens.length>1)?s.pens.map(c=>({c,g:srcShapes.filter(p=>(pm[p.color]||p.color)===c),h:srcHatch.filter(p=>(pm[p.color]||p.color)===c)})).filter(o=>o.g.length||o.h.length):[{c:null,g:srcShapes,h:srcHatch}];
     for(let gi=0;gi<groups.length;gi++){
     if(gi>0) out.moves.push({t:'toolchange',x:0,y:0,from:groups[gi-1].c,to:groups[gi].c});
+    // Each pen fills first, then draws its outlines over the ends of the fill lines.
+    let hl=groups[gi].h;
+    if(hl.length && s.optimize) hl=orderNearest(hl,lastPos(out.moves));
+    for(const p of hl){
+      const c=pm[p.color]||p.color;
+      out.tips.push({pts:p.pts,kind:'cut',color:c});
+      const r=compensate(p.pts,prm,lastDir,opt);
+      for(const mv of r.moves) if(mv.t==='down') mv.c=c;
+      out.moves.push(...r.moves); lastDir=r.lastDir;
+    }
     let shapes=groups[gi].g;
+    if(s.join) shapes=joinPaths(shapes);
     if(s.innerfirst) shapes=orderInnerFirst(shapes, lastPos(out.moves), s.startlong);
     if(s.optimize) shapes=orderNearest(shapes, lastPos(out.moves));
     const list=shapes;
@@ -538,6 +605,192 @@ function buildJob(base, s){
   return out;
 }
 
+
+// ===== Pen infill =====
+const isWhiteHex=h=>!!h && [1,3,5].every(i=>parseInt(h.slice(i,i+2),16)>=245);
+// Color used to fill a shape: its fill, or its outline if it has no fill. White fills are left empty.
+function hatchColorOf(p){ return p.fill?(isWhiteHex(p.fill)?null:p.fill):(p.stroke||null); }
+// White with no outline: not drawn, but it still covers what is under it (like paper).
+function isPaperShape(p){ return isWhiteHex(p.fill) && !p.stroke; }
+// Spans of a horizontal line at height v that fall inside a set of closed rings.
+function ringSpans(rings, rule, v){
+  const xs=[];
+  for(const r of rings) for(let i=0;i<r.length-1;i++){
+    const a=r[i], b=r[i+1];
+    if((a[1]>v)!==(b[1]>v)) xs.push([a[0]+(v-a[1])*(b[0]-a[0])/(b[1]-a[1]), b[1]>a[1]?1:-1]);
+  }
+  xs.sort((p,q)=>p[0]-q[0]);
+  const out=[]; let w=0, st=null;
+  for(const [u,d] of xs){
+    const was=rule==='evenodd'?(w&1)!==0:w!==0;
+    w+= rule==='evenodd'?1:d;
+    const now=rule==='evenodd'?(w&1)!==0:w!==0;
+    if(!was&&now) st=u; else if(was&&!now){ if(u>st) out.push([st,u]); st=null; }
+  }
+  return out;
+}
+function insideRings(rings, rule, pt){ return ringSpans(rings,rule,pt[1]).some(([a,b])=>pt[0]>a&&pt[0]<b); }
+function subtractSpans(A,B){
+  if(!B.length) return A;
+  B=B.slice().sort((p,q)=>p[0]-q[0]);
+  const out=[];
+  for(let [a,b] of A){
+    for(const [c,d] of B){ if(d<=a||c>=b) continue; if(c>a) out.push([a,c]); a=Math.max(a,d); if(a>=b) break; }
+    if(b>a) out.push([a,b]);
+  }
+  return out;
+}
+function segHitT(a,b,c,d){
+  const rx=b[0]-a[0], ry=b[1]-a[1], sx=d[0]-c[0], sy=d[1]-c[1], den=rx*sy-ry*sx;
+  if(Math.abs(den)<1e-12) return null;
+  const t=((c[0]-a[0])*sy-(c[1]-a[1])*sx)/den, u=((c[0]-a[0])*ry-(c[1]-a[1])*rx)/den;
+  return (t>1e-9&&t<1-1e-9&&u>=0&&u<=1)?t:null;
+}
+// Splits a line where it crosses the edges of the cutter shapes and keeps the pieces whose middle passes keep().
+function splitKeep(p, cutters, keep){
+  const pts=p.pts, runs=[]; let cur=null, hid=false;
+  const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+  for(let i=0;i<pts.length-1;i++){
+    const a=pts[i], b=pts[i+1];
+    const sx0=Math.min(a[0],b[0]), sx1=Math.max(a[0],b[0]), sy0=Math.min(a[1],b[1]), sy1=Math.max(a[1],b[1]);
+    const ts=[0,1];
+    for(const U of cutters){ const B=U.bb; if(sx1<B.x0||sx0>B.x1||sy1<B.y0||sy0>B.y1) continue;
+      for(const r of U.rings) for(let j=0;j<r.length-1;j++){ const t=segHitT(a,b,r[j],r[j+1]); if(t!==null) ts.push(t); } }
+    ts.sort((x,y)=>x-y);
+    for(let k=0;k<ts.length-1;k++){
+      const t0=ts[k], t1=ts[k+1]; if(t1-t0<1e-9) continue;
+      const m=lerp(a,b,(t0+t1)/2);
+      if(!keep(m,a,b)){ cur=null; hid=true; continue; }
+      const P0=lerp(a,b,t0), P1=lerp(a,b,t1);
+      if(cur) cur.push(P1); else { cur=[P0,P1]; runs.push(cur); }
+    }
+  }
+  if(!hid) return [p];
+  if(p.closed && runs.length>1){
+    const f=runs[0], l=runs[runs.length-1];
+    if(dist(f[0],pts[0])<1e-9 && dist(l[l.length-1],pts[pts.length-1])<1e-9){ runs.pop(); runs[0]=l.concat(f.slice(1)); }
+  }
+  return runs.filter(r=>{ let L=0; for(let i=1;i<r.length;i++) L+=dist(r[i-1],r[i]); return L>0.05; })
+             .map(r=>({...p,pts:r,closed:false}));
+}
+const inShape=(U,m)=>m[0]>=U.bb.x0&&m[0]<=U.bb.x1&&m[1]>=U.bb.y0&&m[1]<=U.bb.y1&&insideRings(U.rings,U.rule,m);
+// Removes the parts of a line that sit under covering shapes.
+function trimUnder(p, covers){ return splitKeep(p, covers, m=>!covers.some(U=>inShape(U,m))); }
+function makeInfill(shapes, s){
+  const pm=s.penMap||{}, pc=c=>pm[c]||c, multi=!!(s.pens&&s.pens.length>1), pf=s.penFill||{};
+  const byEl=new Map();
+  for(const p of shapes){ if(p.el===undefined) continue;
+    let E=byEl.get(p.el); if(!E){ E={el:p.el,fill:p.fill,stroke:p.stroke,rule:p.rule||'nonzero',rings:[],parts:[]}; byEl.set(p.el,E); }
+    E.parts.push(p); if(p.closed) E.rings.push(p.pts); }
+  const els=[...byEl.values()].sort((a,b)=>a.el-b.el);
+  for(const E of els){
+    E.hc=hatchColorOf(E); E.paper=isPaperShape(E);
+    E.hatched=E.rings.length>0 && !!E.hc && !(multi && pf[pc(E.hc)]===false);
+    E.opaque=E.rings.length>0 && (E.hatched || isWhiteHex(E.fill));
+    E.bb=bbox(E.parts);
+  }
+  const overlap=(A,B)=>!(A.x1<B.x0||A.x0>B.x1||A.y1<B.y0||A.y0>B.y1);
+  const opaque=els.filter(E=>E.opaque);
+  const coversOf=E=>opaque.filter(U=>U.el>E.el && overlap(U.bb,E.bb));
+  const hatches=[], outlines=[];
+  // Outlines
+  for(const E of els){
+    if(E.paper) continue;
+    if(E.hatched && !E.stroke && !s.hout) continue;
+    const cov=coversOf(E);
+    // A filled shape only outlines its true edge: overlapping pieces inside it (common in font letters) are skipped.
+    const edgeOnly=(m,a,b)=>{ const dx=b[0]-a[0], dy=b[1]-a[1], L=Math.hypot(dx,dy)||1, e=0.05, nx=-dy/L*e, ny=dx/L*e;
+      return insideRings(E.rings,E.rule,[m[0]+nx,m[1]+ny])!==insideRings(E.rings,E.rule,[m[0]-nx,m[1]-ny]); };
+    for(const p of E.parts){
+      let pcs=cov.length?trimUnder(p,cov):[p];
+      if(E.hatched && p.closed) pcs=pcs.flatMap(q=>splitKeep(q,[E],edgeOnly));
+      outlines.push(...pcs);
+    }
+    // A white cut-out isn't drawn itself, so the filled shape under it outlines the hole for a clean edge.
+    if(E.hatched && s.hout) for(const U of cov){
+      if(!U.paper) continue;
+      const others=cov.filter(V=>V!==U);
+      for(const ring of U.rings)
+        outlines.push(...splitKeep({pts:ring,closed:true,color:E.parts[0].color},[E,...others],m=>inShape(E,m)&&!others.some(V=>inShape(V,m))));
+    }
+  }
+  // Fill lines, joined into zigzags where the turn stays inside the shape
+  const sp=Math.max(0.2,s.hspace||1), base=(s.hangle||0)*Math.PI/180;
+  const angs=s.infill==='cross'?[base,base+Math.PI/2]:[base];
+  for(const ang of angs){
+    const c=Math.cos(ang), sn=Math.sin(ang);
+    const R=q=>[q[0]*c+q[1]*sn, -q[0]*sn+q[1]*c], IR=q=>[q[0]*c-q[1]*sn, q[0]*sn+q[1]*c];
+    for(const E of opaque){ E.rr=E.rings.map(r=>r.map(R)); let v0=Infinity,v1=-Infinity; for(const r of E.rr) for(const q of r){ if(q[1]<v0)v0=q[1]; if(q[1]>v1)v1=q[1]; } E.rv=[v0,v1]; }
+    for(const E of els){
+      if(!E.hatched) continue;
+      const cov=coversOf(E);
+      const vis=pt=>insideRings(E.rr,E.rule,pt)&&!cov.some(U=>pt[1]>U.rv[0]&&pt[1]<U.rv[1]&&insideRings(U.rr,U.rule,pt));
+      const edgeRings=E.rr.concat(...cov.map(U=>U.rr)), tol=Math.min(0.2,0.3*sp);
+      const nearEdge=pt=>{ for(const r of edgeRings) for(let i=0;i<r.length-1;i++){ const a=r[i], b=r[i+1];
+          if(Math.max(a[1],b[1])<pt[1]-tol||Math.min(a[1],b[1])>pt[1]+tol||Math.max(a[0],b[0])<pt[0]-tol||Math.min(a[0],b[0])>pt[0]+tol) continue;
+          const dx=b[0]-a[0], dy=b[1]-a[1], L=dx*dx+dy*dy, t=L?Math.max(0,Math.min(1,((pt[0]-a[0])*dx+(pt[1]-a[1])*dy)/L)):0;
+          if(Math.hypot(a[0]+t*dx-pt[0],a[1]+t*dy-pt[1])<=tol) return true; }
+        return false; };
+      const k0=Math.ceil(E.rv[0]/sp-0.5), k1=Math.floor(E.rv[1]/sp-0.5);
+      const rows=new Map(), all=[];
+      for(let k=k0;k<=k1;k++){
+        const v=(k+0.5)*sp;
+        let iv=ringSpans(E.rr,E.rule,v);
+        const blk=[]; for(const U of cov) if(v>U.rv[0]&&v<U.rv[1]) blk.push(...ringSpans(U.rr,U.rule,v));
+        iv=subtractSpans(iv,blk);
+        const row=iv.filter(([a,b])=>b-a>=0.2).map(([a,b])=>({k,v,u0:a,u1:b,used:false}));
+        if(row.length){ rows.set(k,row); all.push(...row); }
+      }
+      for(const sg of all){
+        if(sg.used) continue;
+        sg.used=true;
+        const line=[[sg.u0,sg.v],[sg.u1,sg.v]]; let cur=sg, endU=sg.u1;
+        for(;;){
+          const nx=rows.get(cur.k+1); if(!nx) break;
+          let best=null, bd=Infinity, bs=0, be=0;
+          for(const cd of nx){
+            if(cd.used) continue;
+            const near1=Math.abs(cd.u1-endU)<Math.abs(cd.u0-endU);
+            const su=near1?cd.u1:cd.u0, eu=near1?cd.u0:cd.u1, d=Math.abs(su-endU);
+            if(d>2*sp || d>=bd) continue;
+            const A=[endU,cur.v], B=[su,cd.v];
+            if(![0.25,0.5,0.75].every(t=>{ const q=[A[0]+(B[0]-A[0])*t,A[1]+(B[1]-A[1])*t]; return vis(q)&&nearEdge(q); })) continue;
+            best=cd; bd=d; bs=su; be=eu;
+          }
+          if(!best) break;
+          best.used=true; line.push([bs,best.v],[be,best.v]); cur=best; endU=be;
+        }
+        hatches.push({pts:line.map(IR),closed:false,color:E.hc});
+      }
+    }
+  }
+  return {hatches,outlines};
+}
+
+// Joins open lines whose ends meet (within 0.05 mm) into single strokes, so the pen lifts less.
+function joinPaths(shapes){
+  const tol=0.05, open=[], out=[];
+  for(const p of shapes) (p.closed?out:open).push(p);
+  if(open.length<2) return shapes;
+  const cell=q=>[Math.round(q[0]/tol),Math.round(q[1]/tol)], idx=new Map();
+  const add=(q,v)=>{ const c=cell(q), k=c[0]+','+c[1]; let a=idx.get(k); if(!a) idx.set(k,a=[]); a.push(v); };
+  open.forEach((p,i)=>{ add(p.pts[0],{i,end:0}); add(p.pts[p.pts.length-1],{i,end:1}); });
+  const used=new Array(open.length).fill(false);
+  const endPt=v=>v.end?open[v.i].pts[open[v.i].pts.length-1]:open[v.i].pts[0];
+  const find=q=>{ const c=cell(q);
+    for(let dx=-1;dx<=1;dx++) for(let dy=-1;dy<=1;dy++){ const a=idx.get((c[0]+dx)+','+(c[1]+dy)); if(a) for(const v of a) if(!used[v.i]&&dist(q,endPt(v))<=tol) return v; }
+    return null; };
+  for(let i=0;i<open.length;i++){
+    if(used[i]) continue; used[i]=true;
+    let pts=open[i].pts.slice(), c;
+    while((c=find(pts[pts.length-1]))){ used[c.i]=true; let q=open[c.i].pts; if(c.end===1) q=q.slice().reverse(); pts=pts.concat(q.slice(1)); }
+    while((c=find(pts[0]))){ used[c.i]=true; let q=open[c.i].pts; if(c.end===0) q=q.slice().reverse(); pts=q.slice(0,-1).concat(pts); }
+    const closed=pts.length>=4 && dist(pts[0],pts[pts.length-1])<=tol;
+    if(closed) pts[pts.length-1]=[pts[0][0],pts[0][1]];
+    out.push({...open[i],pts,closed});
+  }
+  return out;
+}
 function pointInPoly(pt,poly){
   let c=false;
   for(let i=0,j=poly.length-1;i<poly.length;j=i++){
@@ -640,6 +893,45 @@ function writeGcode(job, s, meta){
   return L.join('\n')+'\n';
 }
 
+// Machine motion limits used for the time estimate (typical LowRider 4 / FluidNC values).
+const MACHINE={xyRate:50, xyAccel:250, zRate:20, zAccel:80, jd:0.01};
+// Seconds per move, planned the way the controller moves: it slows for corners and speeds up again
+// within each axis's speed and acceleration limits. Pen-change pauses are not included.
+function planTimes(moves, s){
+  const M=MACHINE, rate=[M.xyRate,M.xyRate,M.zRate], acc=[M.xyAccel,M.xyAccel,M.zAccel], segs=[];
+  let x=0, y=0, z=s.safez;
+  const add=(mi,dx,dy,dz,v,stop)=>{
+    const L=Math.hypot(dx,dy,dz); if(L<1e-6){ if(stop&&segs.length) segs[segs.length-1].stop=true; return; }
+    const u=[dx/L,dy/L,dz/L]; let vm=v>0?v:Infinity, am=Infinity;
+    for(let k=0;k<3;k++) if(Math.abs(u[k])>1e-9){ vm=Math.min(vm,rate[k]/Math.abs(u[k])); am=Math.min(am,acc[k]/Math.abs(u[k])); }
+    segs.push({mi,u,L,vm,am,stop:!!stop});
+  };
+  moves.forEach((m,i)=>{
+    if(m.t==='travel'){ add(i,m.x-x,m.y-y,0,0); x=m.x; y=m.y; }
+    else if(m.t==='line'){ add(i,m.x-x,m.y-y,0,m.f); x=m.x; y=m.y; }
+    else if(m.t==='arc'){ const N=Math.max(2,Math.ceil(Math.abs(m.delta)/(5*Math.PI/180)));
+      for(let k=1;k<=N;k++){ const a=m.a0+m.delta*k/N, px=m.cx+m.r*Math.cos(a), py=m.cy+m.r*Math.sin(a); add(i,px-x,py-y,0,m.f); x=px; y=py; } x=m.x; y=m.y; }
+    else if(m.t==='down'||m.t==='plunge'){ add(i,0,0,m.z-z,s.plunge); z=m.z; }
+    else if(m.t==='up'){ add(i,0,0,s.safez-z,0); z=s.safez; }
+    else if(m.t==='toolchange'){ const zt=Math.max(10,s.safez);
+      add(i,0,0,zt-z,0); add(i,m.x-x,m.y-y,0,0,true); add(i,0,0,-zt,0,true); add(i,0,0,s.safez,0); x=m.x; y=m.y; z=s.safez; }
+  });
+  const n=segs.length, v=new Float64Array(n+1);
+  for(let k=1;k<n;k++){
+    const A=segs[k-1], B=segs[k]; if(A.stop){ v[k]=0; continue; }
+    const c=-(A.u[0]*B.u[0]+A.u[1]*B.u[1]+A.u[2]*B.u[2]);
+    let vj=0; if(c<0.9999){ const sh=Math.sqrt(Math.max(0,0.5*(1-c))); vj=sh<0.9999?Math.sqrt(Math.min(A.am,B.am)*M.jd*sh/(1-sh)):Infinity; }
+    v[k]=Math.min(vj,A.vm,B.vm);
+  }
+  for(let k=n-1;k>=0;k--) v[k]=Math.min(v[k],Math.sqrt(v[k+1]*v[k+1]+2*segs[k].am*segs[k].L));
+  for(let k=0;k<n;k++) v[k+1]=Math.min(v[k+1],Math.sqrt(v[k]*v[k]+2*segs[k].am*segs[k].L));
+  const dur=new Float64Array(moves.length);
+  for(let k=0;k<n;k++){ const S=segs[k], a=S.am, v0=v[k], v1=v[k+1];
+    const vp=Math.min(S.vm,Math.sqrt((2*a*S.L+v0*v0+v1*v1)/2));
+    const d1=(vp*vp-v0*v0)/(2*a), d2=(vp*vp-v1*v1)/(2*a);
+    dur[S.mi]+=(vp-v0)/a+(vp-v1)/a+Math.max(0,S.L-d1-d2)/vp; }
+  return dur;
+}
 // Cut/draw length for the stats. (Time comes from the animation, which models every move.)
 function jobStats(job){
   let cut=0, x=0, y=0;
@@ -653,9 +945,9 @@ function jobStats(job){
 
 </script>
 <script>
-const DEF={mirror:false,margin:4,offset:0.4,overcut:0.5,depth:0.5,passes:1,pextra:0.15,precut:true,startlong:true,innerfirst:true,
+const DEF={mirror:false,rotate:false,margin:4,offset:0.4,overcut:0.5,depth:0.5,passes:1,pextra:0.15,precut:true,startlong:true,innerfirst:true,
   feed:20,plunge:5,safez:2,vary:'none',vstart:0.1,vstep:0.05,vcount:5,gap:6,gstart:'G21\nG90\nG94',gend:'G0 Z10\nG0 X0 Y0\nM30'};
-const DEF_PEN={mirror:false,margin:4,depth:0.5,feed:25,plunge:10,safez:2,optimize:true,
+const DEF_PEN={mirror:false,rotate:false,join:true,margin:4,depth:0.5,feed:25,plunge:10,safez:2,optimize:true,infill:'off',hspace:1,hangle:45,hout:true,
   vary:'none',vstart:0.3,vstep:0.1,vcount:5,gap:6,gstart:'G21\nG90\nG94',gend:'G0 Z10\nG0 X0 Y0\nM30'};
 const FIXED={tol:0.03,thresh:5,preswivel:true};
 const PEN_FIXED={offset:0,overcut:0,passes:1,pextra:0,preswivel:false,precut:false,startlong:false,innerfirst:false,thresh:5};
@@ -669,7 +961,7 @@ const SESSION={};
 try{ ['dk-settings-v1','dk-settings-pen-v1','dk-mode'].forEach(k=>localStorage.removeItem(k)); }catch(e){}
 const defs=()=>mode==='pen'?DEF_PEN:DEF;
 const $=id=>document.getElementById(id);
-const state={raw:null,name:'',job:null,gcode:'',pens:[],penNames:{},penMap:{}};
+const state={raw:null,name:'',job:null,gcode:'',pens:[],penNames:{},penMap:{},penFill:{},scale:1};
 let downloads=null, inViewer=false;
 
 // ===== SVG reader =====
@@ -756,6 +1048,13 @@ function cssToHex(c){
   return '#'+[m[1],m[2],m[3]].map(v=>Math.round(+v).toString(16).padStart(2,'0')).join('');
 }
 // Line color: the stroke, or the fill if there is no stroke. Null if the shape is invisible.
+// Fill and outline colors separately, plus the fill rule (for infill).
+function elPaint(el){
+  const cs=getComputedStyle(el);
+  const st=cs.stroke&&cs.stroke!=='none'?(/^url/.test(cs.stroke)?'#000000':cssToHex(cs.stroke)):null;
+  const fi=cs.fill&&cs.fill!=='none'?(/^url/.test(cs.fill)?'#000000':cssToHex(cs.fill)):null;
+  return {st,fi,rule:cs.fillRule==='evenodd'?'evenodd':'nonzero'};
+}
 function elColor(el){
   const cs=getComputedStyle(el);
   const st=cs.stroke&&cs.stroke!=='none'&&!/^url/.test(cs.stroke)?cssToHex(cs.stroke):null;
@@ -778,7 +1077,7 @@ const svgCache={key:null,val:null};
 function parseSVG(text, tolMM){
   const key=tolMM+'|'+text;
   if(svgCache.key===key) return svgCache.val;
-  const res={paths:[],colors:[],warnings:[]};
+  const res={paths:[],colors:[],meta:[],nEl:0,warnings:[]};
   const doc=new DOMParser().parseFromString(text,'image/svg+xml');
   const root=doc.documentElement;
   if(!root || root.localName!=='svg' || doc.getElementsByTagName('parsererror').length){ res.warnings.push('That file could not be read as an SVG.'); return res; }
@@ -789,7 +1088,7 @@ function parseSVG(text, tolMM){
   const okLen=v=>v && !/%$/.test(v.trim());
   if(!okLen(svg.getAttribute('width'))||!okLen(svg.getAttribute('height'))){
     if(vb.length===4){ svg.setAttribute('width',vb[2]); svg.setAttribute('height',vb[3]); }
-    res.warnings.push('The SVG has no size in mm, so 1 unit is treated as 1 pixel (96 per inch). Check the size shown below.');
+    res.noSize=true;
   }
   host.append(svg);
   const SVGNS='http://www.w3.org/2000/svg', XL='http://www.w3.org/1999/xlink';
@@ -820,9 +1119,11 @@ function parseSVG(text, tolMM){
     const scale=Math.sqrt(Math.abs(m.a*m.d-m.b*m.c))*pxToMM || 1;
     const col=elColor(el);
     if(!col) return;
+    const pa=elPaint(el), elIdx=res.nEl++;
     const polys=svgPathToPolys(shapeToD(el), Math.max(1e-6,tolMM/scale));
     for(const p of polys){
       res.colors.push(col);
+      res.meta.push({el:elIdx,fill:pa.fi,stroke:pa.st,rule:pa.rule});
       res.paths.push(p.pts.map(([x,y])=>[(m.a*x+m.c*y+m.e)*pxToMM, -(m.b*x+m.d*y+m.f)*pxToMM]));
     }
   });
@@ -875,7 +1176,7 @@ function readSettings(){
 function jobSettings(){ const s=Object.assign({},FIXED,readSettings());
   if(mode!=='pen') return s;
   Object.assign(s,PEN_FIXED,{vary:'none'});
-  if(state.pens.length>1){ s.pens=state.pens.slice(); s.penNames=state.penNames; s.penMap=state.penMap; }
+  if(state.pens.length>1){ s.pens=state.pens.slice(); s.penNames=state.penNames; s.penMap=state.penMap; s.penFill=state.penFill; }
   return s; }
 function saveSettings(s){ SESSION[STORE[mode]]=s; }
 function clearShapes(){ state.raw=null; state.name=''; $('loaded').textContent=''; }
@@ -891,7 +1192,13 @@ function setMode(m){
 function base(){
   if(!state.raw) return null;
   if(state.raw.kind==='test') return testShapes();
-  if(state.raw.kind==='svg'){ const r=parseSVG(state.raw.text, FIXED.tol); return cleanPaths(r.paths, r.colors); }
+  if(state.raw.kind==='svg'){
+    // Resized designs are read at a finer curve tolerance so curves stay just as smooth at the new size.
+    const k=state.scale>0?state.scale:1, r=parseSVG(state.raw.text, FIXED.tol/k), out=cleanPaths(r.paths, r.colors, r.meta);
+    if(k!==1) for(const p of out) p.pts=p.pts.map(q=>[q[0]*k,q[1]*k]);
+    // Rotate 90 degrees clockwise (as seen in the preview).
+    if($('rotate').checked) for(const p of out) p.pts=p.pts.map(q=>[q[1],-q[0]]);
+    return out; }
   return null;
 }
 
@@ -902,16 +1209,22 @@ function syncPens(b){
   // Colors within a small distance of each other count as the same pen.
   const near=(a,c)=>{ const v=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)); const A=v(a),C=v(c); return Math.hypot(A[0]-C[0],A[1]-C[1],A[2]-C[2])<40; };
   const found=[], map={};
-  for(const p of (b||[])){ if(!p.color||map[p.color]) continue; const rep=found.find(c=>near(c,p.color)); if(rep) map[p.color]=rep; else { found.push(p.color); map[p.color]=p.color; } }
+  const inf=infillOn(), cols=[];
+  for(const p of (b||[])){
+    if(p.color && !(inf && isPaperShape(p))) cols.push(p.color);
+    if(inf && p.closed){ const h=hatchColorOf(p); if(h) cols.push(h); }
+  }
+  for(const col of cols){ if(map[col]) continue; const rep=found.find(c=>near(c,col)); if(rep) map[col]=rep; else { found.push(col); map[col]=col; } }
   state.penMap=map;
   const same=found.length===state.pens.length && found.every(c=>state.pens.includes(c));
   if(!same){
-    state.pens=found.slice().sort((a,c)=>lum(c)-lum(a));
+    state.pens=found.slice().sort((a,c)=>lum(c)-lum(a)); state.penFill={};
     const used={}; state.penNames={};
     for(const c of state.pens){ let n=colorName(c); used[n]=(used[n]||0)+1; state.penNames[c]=used[n]>1?n+' '+used[n]:n; }
   }
   renderPens();
 }
+const infillOn=()=>mode==='pen' && $('infill').value!=='off';
 function renderPens(){
   const box=$('penbox'), ol=$('penlist');
   box.hidden=!(mode==='pen' && state.pens.length>1);
@@ -928,7 +1241,15 @@ function renderPens(){
     const dn=document.createElement('button'); dn.type='button'; dn.className='ghost'; dn.textContent='▼'; dn.setAttribute('aria-label','Move '+state.penNames[c]+' later'); dn.disabled=i===state.pens.length-1;
     up.onclick=()=>{ const a=state.pens; [a[i-1],a[i]]=[a[i],a[i-1]]; update(); };
     dn.onclick=()=>{ const a=state.pens; [a[i+1],a[i]]=[a[i],a[i+1]]; update(); };
-    li.append(num,sw,nm,up,dn); ol.append(li);
+    li.append(num,sw,nm);
+    if(infillOn()){
+      const lb=document.createElement('label'); lb.className='pfill';
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=state.penFill[c]!==false;
+      cb.setAttribute('aria-label','Fill shapes drawn with the '+state.penNames[c]+' pen');
+      cb.onchange=()=>{ state.penFill[c]=cb.checked; update(); };
+      lb.append(cb,document.createTextNode('Fill')); li.append(lb);
+    }
+    li.append(up,dn); ol.append(li);
   });
 }
 // Settings that would make an unusable or unsafe file.
@@ -940,6 +1261,7 @@ function settingErrors(s){
   chk('', s.plunge>0, 'Plunge speed must be more than 0.');
   chk('', s.safez>=0.5, (pen?'Pen up height':'Travel height')+' must be at least 0.5 mm.');
   chk('', s.margin>=0, 'Space before design can\u2019t be negative.');
+  if(pen && s.infill!=='off') chk('', s.hspace>=0.2, 'Line spacing must be at least 0.2 mm.');
   if(!pen){
     chk('offset', s.offset>=0, 'Blade offset can\u2019t be negative.');
     chk('overcut', s.overcut>=0, 'Overcut can\u2019t be negative.');
@@ -949,13 +1271,18 @@ function settingErrors(s){
   return e;
 }
 function update(){
+  document.documentElement.dataset.tool=mode;
   refreshSteppers();
   saveSettings(readSettings()); let s=jobSettings(); const LABEL=LABELS[mode];
   ['offset','overcut','depth','feed'].forEach(k=>$('r-'+k).classList.toggle('off',s.vary===k));
   $('testfields').classList.toggle('off',s.vary==='none');
   $('r-pextra').hidden=!(Math.round(s.passes)>1);
+  { const on=infillOn(); ['r-hspace','r-hangle','r-hout'].forEach(id=>$(id).hidden=!on); }
   const b=base();
   $('empty').style.display=(state.raw&&!(b&&b.length))?'flex':'none';
+  $('r-size').hidden=!(state.raw&&state.raw.kind==='svg'&&b&&b.length);
+  { const ns=!!(state.raw&&state.raw.kind==='svg'&&parseSVG(state.raw.text, FIXED.tol/(state.scale||1)).noSize);
+    $('dswarn').hidden=!ns; if(!ns){ $('sizenote').hidden=true; $('dswarn').setAttribute('aria-expanded','false'); } }
   if(!b || !b.length){
     state.job=null; state.gcode=''; buildAnim(null);
     if(state.raw){
@@ -975,6 +1302,7 @@ function update(){
   state.gcode=usable?writeGcode(job,s,{name:state.name,mode}):'';
   $('out').value=state.gcode;
   const st=jobStats(job), bb=bbox(b);
+  syncSize(bb);
   const mins=Math.max(1,Math.round(anim.total/60));
   $('stats').innerHTML='';
   [[bb.w.toFixed(1)+' × '+bb.h.toFixed(1)+' mm','Design size'],[b.length,'Shapes'],[(st.cut/1000).toFixed(2)+' m',mode==='pen'?'Line length':'Cut length'],['~'+mins+' min','Estimated time']]
@@ -997,7 +1325,7 @@ function buildAnim(job){
   stopAnim(); anim.i=0; anim.t=0; anim.n=0; anim.total=0;
   anim.changes=[];
   if(!job||!job.moves.length){ syncAnimUI(); renderMarks(); return; }
-  const s=jobSettings(), mv=job.moves;
+  const s=jobSettings(), mv=job.moves, D=planTimes(mv,s);
   let len=0; for(const m of mv){ if(m.t==='arc') len+=Math.abs(m.delta)*m.r; }
   let px=0,py=0; for(const m of mv){ if(m.x!==undefined){ len+=Math.hypot(m.x-px,m.y-py); px=m.x; py=m.y; } }
   const step=Math.max(0.05, len/150000);
@@ -1010,20 +1338,20 @@ function buildAnim(job){
     if(down){ const vx=hx-tx, vy=hy-ty, l=Math.hypot(vx,vy); if(l>1e-9){dx=vx/l;dy=vy/l;} }
     tx=hx-r*dx; ty=hy-r*dy; t+=dt; push(); };
   push();
-  for(const m of mv){
-    if(m.t==='travel'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy),N=Math.max(1,Math.ceil(d/Math.max(step,1))),dt=d/50/N;
+  for(let mi=0;mi<mv.length;mi++){ const m=mv[mi];
+    if(m.t==='travel'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy),N=Math.max(1,Math.ceil(d/Math.max(step,1))),dt=D[mi]/N;
       for(let k=1;k<=N;k++) moveTo(sx+(m.x-sx)*k/N, sy+(m.y-sy)*k/N, dt); }
-    else if(m.t==='toolchange'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy),N=Math.max(1,Math.ceil(d/Math.max(step,1))),dt=d/50/N;
+    else if(m.t==='toolchange'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy),N=Math.max(1,Math.ceil(d/Math.max(step,1))),dt=D[mi]/N;
       for(let k=1;k<=N;k++) moveTo(sx+(m.x-sx)*k/N, sy+(m.y-sy)*k/N, dt);
       const t0=t; t+=3; push(); ci=colIdx(m.to); push(); t+=3; push();
       changes.push({t0,tm:t0+3,t1:t,from:m.from,to:m.to}); }
-    else if(m.t==='down'){ if(m.c) ci=colIdx(m.c); r=m.r||0; tx=hx-r*dx; ty=hy-r*dy; t+=(s.safez+Math.abs(m.z))/Math.max(0.1,s.plunge); down=true; push(); }
-    else if(m.t==='up'){ t+=0.25; down=false; push(); }
-    else if(m.t==='plunge'){ t+=Math.max(0.1,(s.pextra||0)/Math.max(0.1,s.plunge)); push(); }
+    else if(m.t==='down'){ if(m.c) ci=colIdx(m.c); r=m.r||0; tx=hx-r*dx; ty=hy-r*dy; t+=D[mi]; down=true; push(); }
+    else if(m.t==='up'){ t+=D[mi]; down=false; push(); }
+    else if(m.t==='plunge'){ t+=D[mi]; push(); }
     else if(m.t==='line'){ const sx=hx,sy=hy,d=Math.hypot(m.x-sx,m.y-sy); if(d<1e-9) continue;
-      const N=Math.max(1,Math.ceil(d/step)),dt=d/m.f/N;
+      const N=Math.max(1,Math.ceil(d/step)),dt=D[mi]/N;
       for(let k=1;k<=N;k++) moveTo(sx+(m.x-sx)*k/N, sy+(m.y-sy)*k/N, dt); }
-    else if(m.t==='arc'){ const al=Math.abs(m.delta)*m.r, N=Math.max(4,Math.ceil(al/Math.min(step,0.02))), dt=al/m.f/N;
+    else if(m.t==='arc'){ const al=Math.abs(m.delta)*m.r, N=Math.max(4,Math.ceil(al/Math.min(step,0.02))), dt=D[mi]/N;
       for(let k=1;k<=N;k++){ const a=m.a0+m.delta*k/N; moveTo(m.cx+m.r*Math.cos(a), m.cy+m.r*Math.sin(a), dt); } }
   }
   anim.hx=Float32Array.from(HX); anim.hy=Float32Array.from(HY); anim.tx=Float32Array.from(TX); anim.ty=Float32Array.from(TY);
@@ -1088,15 +1416,15 @@ function drawAnim(ctx,X,Y){
     }
     if(cur!==null) ctx.stroke();
   };
-  if(multi){ trace(()=> 'rgba(255,255,255,.6)',4); trace(i=>anim.cols[i]||cssVar('--tip'),2.2); }
+  if(multi){ const hc=cssVar('--halo'); trace(()=>hc,4); trace(i=>anim.cols[i]||cssVar('--tip'),2.2); }
   else trace(()=>cssVar('--tip'),2);
   ctx.lineCap='butt';
   const hx=X(anim.hx[n]), hy=Y(anim.hy[n]), tx=X(anim.tx[n]), ty=Y(anim.ty[n]), isDown=!!anim.dn[n];
   if(mode!=='pen'){ ctx.strokeStyle=cssVar('--holder'); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(hx,hy); ctx.lineTo(tx,ty); ctx.stroke(); }
   const penCol=multi?anim.cols[anim.cl[n]]:null;
-  if(penCol){ ctx.beginPath(); ctx.arc(hx,hy,7,0,Math.PI*2); ctx.lineWidth=5; ctx.strokeStyle='rgba(255,255,255,.75)'; ctx.stroke(); }
-  ctx.beginPath(); ctx.arc(hx,hy,7,0,Math.PI*2); ctx.lineWidth=2; ctx.strokeStyle=penCol||cssVar('--holder');
-  if(isDown){ ctx.fillStyle=penCol||cssVar('--holder'); ctx.globalAlpha=.55; ctx.fill(); ctx.globalAlpha=1; }
+  if(penCol){ ctx.beginPath(); ctx.arc(hx,hy,7,0,Math.PI*2); ctx.lineWidth=5; ctx.strokeStyle=cssVar('--halo-strong'); ctx.stroke(); }
+  ctx.beginPath(); ctx.arc(hx,hy,7,0,Math.PI*2); const mk=mode==='pen'?cssVar('--pen-mark'):cssVar('--holder'); ctx.lineWidth=2; ctx.strokeStyle=penCol||mk;
+  if(isDown){ ctx.fillStyle=penCol||mk; ctx.globalAlpha=.55; ctx.fill(); ctx.globalAlpha=1; }
   ctx.stroke();
   const ch=(anim.changes||[]).find(c=>anim.t>=c.t0&&anim.t<c.t1);
   if(ch){
@@ -1108,7 +1436,7 @@ function drawAnim(ctx,X,Y){
     const tw=ctx.measureText(msg).width, bw=tw+52, bh=36, bx=(W-bw)/2, by=14;
     ctx.fillStyle='rgba(247,245,236,.96)'; ctx.beginPath();
     if(ctx.roundRect) ctx.roundRect(bx,by,bw,bh,18); else ctx.rect(bx,by,bw,bh);
-    ctx.fill();
+    ctx.fill(); ctx.lineWidth=1; ctx.strokeStyle='rgba(30,37,34,.2)'; ctx.stroke();
     ctx.beginPath(); ctx.arc(bx+20,by+bh/2,7,0,Math.PI*2); ctx.fillStyle=col; ctx.fill(); ctx.lineWidth=1; ctx.strokeStyle='rgba(0,0,0,.25)'; ctx.stroke();
     ctx.fillStyle='#1E2522'; ctx.textBaseline='middle'; ctx.fillText(msg,bx+36,by+bh/2+1); ctx.textBaseline='alphabetic';
   }
@@ -1139,6 +1467,11 @@ function draw(){
     ctx.stroke();};
   if(sc>=5) drawGrid(1,cssVar('--mat-minor'));
   drawGrid(sc>=1.2?10:50,cssVar('--mat-major'));
+  // Measurements along the bottom and left edges, in mm from zero, like a cutting mat.
+  { const st=sc>=1.2?10:50, lab=sc*st>=28?st:st*2;
+    ctx.fillStyle=cssVar('--mat-num'); ctx.font='500 10px Barlow, system-ui, sans-serif'; ctx.textBaseline='alphabetic';
+    for(let g=Math.ceil(gx0/lab)*lab;g<=gx1;g+=lab){ if(g===0) continue; const p=Math.round(X(g)); if(p<14||p>W-24) continue; ctx.fillText(String(g),p+3,H-5); }
+    for(let g=Math.ceil(gy0/lab)*lab;g<=gy1;g+=lab){ if(g===0) continue; const p=Math.round(Y(g)); if(p<12||p>H-16) continue; ctx.fillText(String(g),4,p-3); } }
   // origin
   ctx.strokeStyle=cssVar('--tip'); ctx.lineWidth=1.5; ctx.beginPath();
   ctx.moveTo(X(0)-8,Y(0));ctx.lineTo(X(0)+8,Y(0));ctx.moveTo(X(0),Y(0)-8);ctx.lineTo(X(0),Y(0)+8);ctx.stroke();
@@ -1153,10 +1486,20 @@ function draw(){
   ctx.stroke(); ctx.setLineDash([]);
   // tips
   const multi=mode==='pen'&&state.pens.length>1;
+  if(multi){
+    ctx.lineJoin='round';
+    for(const pass of [0,1]) for(const t of job.tips){
+      if(!t.color) continue;
+      ctx.beginPath(); t.pts.forEach((q,i)=>i?ctx.lineTo(X(q[0]),Y(q[1])):ctx.moveTo(X(q[0]),Y(q[1])));
+      if(pass===0){ ctx.strokeStyle=cssVar('--halo'); ctx.lineWidth=3.6; } else { ctx.strokeStyle=t.color; ctx.lineWidth=1.8; }
+      ctx.stroke();
+    }
+  }
   for(const t of job.tips){
+    if(multi && t.color) continue;
     const path=()=>{ ctx.beginPath(); t.pts.forEach((q,i)=>i?ctx.lineTo(X(q[0]),Y(q[1])):ctx.moveTo(X(q[0]),Y(q[1]))); };
     ctx.lineJoin='round';
-    if(multi && t.color){ ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=3.6; path(); ctx.stroke(); ctx.strokeStyle=t.color; ctx.lineWidth=1.8; path(); ctx.stroke(); continue; }
+    if(multi && t.color){ ctx.strokeStyle=cssVar('--halo'); ctx.lineWidth=3.6; path(); ctx.stroke(); ctx.strokeStyle=t.color; ctx.lineWidth=1.8; path(); ctx.stroke(); continue; }
     ctx.strokeStyle= t.kind==='cut'?cssVar('--tip'):cssVar('--mark'); ctx.lineWidth=t.kind==='cut'?1.6:1.4;
     path(); ctx.stroke();
   }
@@ -1173,7 +1516,8 @@ function draw(){
 
 function fileBase(){
   const s=readSettings(); let n=(state.name||'design').replace(/\.[^.]+$/,'').replace(/[^A-Za-z0-9_-]+/g,'_');
-  if(s.vary!=='none') n+='_test_'+s.vary; return n;
+  if(s.vary!=='none') n+='_test_'+s.vary;
+  return n+(mode==='pen'?'_pp':'_dk');
 }
 async function save(){
   if(!state.gcode) return;
@@ -1200,7 +1544,7 @@ $('m-knife').addEventListener('click',()=>{ if(mode!=='knife') setMode('knife');
 $('m-pen').addEventListener('click',()=>{ if(mode!=='pen') setMode('pen'); });
 // Number fields only accept valid values: no minus signs or exponents, no more decimals than the field uses,
 // nothing above its maximum, and anything below its minimum snaps up when you leave the field.
-const INT_FIELDS=['passes','vcount'];
+const INT_FIELDS=['passes','vcount','hangle'];
 const attrNum=(el,a,dflt)=>{ const v=parseFloat(el.getAttribute(a)); return isFinite(v)?v:dflt; };
 const maxDec=el=>{
   if(INT_FIELDS.includes(el.id)) return 0;
@@ -1263,7 +1607,31 @@ document.querySelectorAll('aside input[type=number]').forEach(el=>{
   steppers.push({el,up:mk('up'),dn:mk('dn')});
 });
 refreshSteppers();
-document.querySelectorAll('aside input, aside select, aside textarea').forEach(el=>{ if(el.id!=='file') el.addEventListener('input',update); });
+document.querySelectorAll('aside input, aside select, aside textarea').forEach(el=>{ if(!['file','dw','dh'].includes(el.id)) el.addEventListener('input',update); });
+// Design size: typing a width or height sets the scale; the other field follows.
+let sizeBase=null;
+function syncSize(bb){
+  const k=state.scale||1; sizeBase={w:bb.w/k,h:bb.h/k};
+  for(const [id,v] of [['dw',bb.w],['dh',bb.h]]) if(document.activeElement!==$(id)) $(id).value=String(+v.toFixed(1));
+  $('dsreset').hidden=Math.abs(k-1)<1e-9;
+}
+function sizeFrom(id){
+  const v=parseFloat($(id).value); if(!sizeBase||!(v>0)) return;
+  const base=id==='dw'?sizeBase.w:sizeBase.h; if(!(base>0)) return;
+  state.scale=v/base;
+  const other=id==='dw'?'dh':'dw', ov=(id==='dw'?sizeBase.h:sizeBase.w)*state.scale;
+  $(other).value=String(+ov.toFixed(1));
+  update();
+}
+let sizeT=null;
+// Listen on the container in the capture phase so the new size is read before the general settings refresh runs.
+$('r-size').addEventListener('input',e=>{ const id=e.target.id; if(id!=='dw'&&id!=='dh') return; clearTimeout(sizeT); sizeT=setTimeout(()=>sizeFrom(id),300); },true);
+$('r-size').addEventListener('change',e=>{ const id=e.target.id; if(id!=='dw'&&id!=='dh') return; clearTimeout(sizeT); sizeFrom(id); },true);
+$('dsreset').addEventListener('click',()=>{ state.scale=1; update(); });
+let angleTouched=false;
+$('hangle').addEventListener('input',()=>{ angleTouched=true; });
+$('infill').addEventListener('input',()=>{ if(!angleTouched){ $('hangle').value=$('infill').value==='cross'?'90':'45'; } },true);
+$('dswarn').addEventListener('click',()=>{ const n=$('sizenote'); n.hidden=!n.hidden; $('dswarn').setAttribute('aria-expanded',String(!n.hidden)); });
 const PRESETS={knife:{offset:[0.1,0.05],depth:[0.1,0.05],overcut:[0,0.25],feed:[5,5]},pen:{depth:[0.3,0.1],feed:[15,5]}};
 $('vary').addEventListener('change',()=>{ const p=PRESETS[mode][$('vary').value]; if(p){ $('vstart').value=p[0]; $('vstep').value=p[1]; } syncTestSteps(); tidyAll(); update(); });
 FIXED2.forEach(id=>$(id).addEventListener('change',()=>tidyNumber($(id))));
@@ -1271,7 +1639,7 @@ $('file').addEventListener('click',()=>{ if(state.raw && state.raw.kind==='test'
 $('file').addEventListener('change',e=>{
   const f=e.target.files[0]; if(!f) return;
   const r=new FileReader();
-  r.onload=()=>{ state.raw={kind:'svg',text:String(r.result)}; state.name=f.name; $('loaded').textContent='Loaded '+f.name; update(); };
+  r.onload=()=>{ state.raw={kind:'svg',text:String(r.result)}; state.name=f.name; state.scale=1; $('sizenote').hidden=true; $('dswarn').setAttribute('aria-expanded','false'); $('loaded').textContent='Loaded '+f.name; update(); };
   r.onerror=()=>{ $('loaded').textContent='Could not read that file.'; };
   r.readAsText(f); e.target.value='';
 });
@@ -1322,7 +1690,8 @@ if(window.claude && typeof window.claude.use==='function'){
     document.head.appendChild(l);
   };
   const disarm=()=>{ clearTimeout(hideT); wrap.classList.remove('armed'); btn.tabIndex=-1; };
-  const arm=()=>{ if(running) return; loadFont(); wrap.classList.add('armed'); btn.tabIndex=0; clearTimeout(hideT); hideT=setTimeout(disarm,5000); };
+  let armedAt=0;
+  const arm=()=>{ if(running) return; loadFont(); armedAt=performance.now(); wrap.classList.add('armed'); btn.tabIndex=0; clearTimeout(hideT); hideT=setTimeout(disarm,5000); };
   logo.addEventListener('pointerdown',loadFont);
   logo.addEventListener('mousedown',e=>{ if(e.detail>1) e.preventDefault(); });
   logo.addEventListener('pointerup',()=>{
@@ -1349,7 +1718,8 @@ if(window.claude && typeof window.claude.use==='function'){
   const onKey=e=>{ if(e.key==='Escape') finish(); };
   fx.addEventListener('click',()=>{ if(fx.classList.contains('msg')) rebuild(); });
   btn.addEventListener('click',()=>{
-    if(running) return; running=true; clearTimeout(hideT);
+    // The second click of the double-click that revealed the button doesn't count as pressing it.
+    if(running || performance.now()-armedAt<450) return; running=true; clearTimeout(hideT);
     btn.classList.add('pressed');
     pcs=[brand,document.querySelector('header .topr'),...document.querySelectorAll('aside > section.box, main > .matbox, main > .panel')]
       .filter(el=>el && el.getClientRects().length);
