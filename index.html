@@ -1,26 +1,22 @@
 <!DOCTYPE html>
 <!--
-MIT License
+G-Code-Inator: SVG to G-code for drag knife cutting and pen plotting.
+Copyright (C) 2026 David Darts
 
-Copyright (c) 2026 David Darts
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU Affero General Public License as published
+by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU Affero General Public License for more details.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+You should have received a copy of the GNU Affero General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Source code: https://github.com/daviddarts/gcodeinator
 -->
 <html lang="en">
 <head>
@@ -419,7 +415,7 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   <h3>Preparing an SVG</h3>
   <p>Convert everything (shapes, text, etc.) to paths before saving. Only outlines are cut or drawn, except in pen mode with Infill on, where closed shapes are filled with lines. Line thickness and hidden layers are ignored. If the size is wrong, set Width or Height under Design.</p>
   <p class="sd-warn"><b>Warning:</b> Do not double-click the G-Code-Inator logo. There is definitely no self-destruct button.</p>
-  <p class="dlg-foot">Vibe coded by David Darts · MIT License © 2026 · <a href="https://github.com/daviddarts/gcodeinator" target="_blank" rel="noopener">Source on GitHub</a></p>
+  <p class="dlg-foot">Vibe coded by David Darts · AGPL-3.0 License © 2026 · <a href="https://github.com/daviddarts/gcodeinator" target="_blank" rel="noopener">Source on GitHub</a></p>
 </dialog>
 <div id="svghost" aria-hidden="true"></div>
 <script>

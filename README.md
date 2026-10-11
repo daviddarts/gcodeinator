@@ -22,8 +22,8 @@ Converts SVG vectors into G-code for pen plotting, with full support for multi-c
 
 ## Hidden Self-Destruct Button
 
-G-Code-Inator includes a Dr. Doofenshmirtz (Phineas and Ferb) inspired self-destruct button hidden behind the G-Code-Inator logo. He adds these buttons to all of his "Inators" (evil inventions) and is invariably tricked into activating the button before the end of the episode. Double-click the logo to reveal it.
+G-Code-Inator includes a Dr. Doofenshmirtz (Phineas and Ferb) inspired self-destruct button hidden behind the logo at the top of the page. Double-click to reveal it.
 
 ## License
 
-MIT License © 2026 David Darts. See [LICENSE](LICENSE).
+AGPL-3.0 License © 2026 David Darts. See [LICENSE](LICENSE).
