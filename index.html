@@ -152,6 +152,31 @@ aside .modesw{display:grid;grid-template-columns:1fr 1fr;width:100%;margin:0 0 1
 .mattools .histgrp svg{width:20px;height:20px}
 .mattools .histgrp .tog:disabled{opacity:.4;cursor:default}
 .mattools .tbreak{flex-basis:100%;height:0}
+.appfoot{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;max-width:1400px;margin:0 auto;padding:4px 24px 28px;color:var(--muted);font-size:.86rem}
+.appfoot #aboutbtn{width:auto;height:auto;border-radius:0;display:inline-block;padding:4px 2px}
+.appfoot .footlink{white-space:nowrap;width:auto;background:none;border:0;padding:4px 2px;box-shadow:none;color:var(--muted);font:inherit;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.appfoot .footlink:hover{color:var(--ink);transform:none;box-shadow:none}
+/* phones: a compact header and toolbar, so the mat gets the room */
+@media (max-width:600px){
+  header{padding:10px 14px 2px}
+  header .brand{gap:10px}
+  header .logo{width:52px}
+  header h1{font-size:1.55rem}
+  header p.tagline{font-size:.9rem;margin-top:0}
+  .wrap{padding:8px 10px 20px;gap:12px}
+  .matbox{padding:8px}
+  .mattools{gap:6px 6px;padding:0 0 8px}
+  .mattools .num{width:62px}.mattools #posgrp .num{width:58px}
+  .mattools input[type=number]{height:32px;font-size:.92rem}
+  .mattools label{font-size:.85rem}
+  .mattools .unit{font-size:.8rem}
+  .mattools .tog,.mattools .histgrp .tog{height:32px;width:32px}
+  .openbtn,.samplebtn,.clearbtn{height:34px}
+  canvas{height:62vh}
+  .legend{font-size:.8rem;padding-top:6px}
+  .panel .btns button{font-size:.95rem;gap:6px;padding-left:8px;padding-right:8px}
+  #save .sv svg{height:16px}
+}
 .mattools #posgrp .num{width:76px}
 .mattools input.neg{color:#FF8A80}
 @media (max-width:480px){.mattools #posgrp{order:1}.mattools .tgrp:has(#mirror){order:2;margin-left:auto}.mattools #r-size{order:3}}
@@ -186,6 +211,7 @@ input:focus-visible + .tog{outline:3px solid var(--holder);outline-offset:2px}
 .shapemenu button{min-height:30px}
 .shapemenu button > svg{width:18px;height:18px;flex:none}
 .shapemenu button:not(:has(svg)){padding-left:34px}
+html{touch-action:pan-x pan-y}
 #cv{touch-action:pan-x pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 .selbar{position:absolute;left:50%;transform:translateX(-50%);z-index:12;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;width:max-content;max-width:calc(100% - 28px);padding:4px 5px;border-radius:12px;border:2px solid var(--ol);background:var(--panel);box-shadow:0 4px 0 var(--ol);color:var(--ink)}
 .selbar[hidden]{display:none}
@@ -198,7 +224,7 @@ input:focus-visible + .tog{outline:3px solid var(--holder);outline-offset:2px}
 .selbar button:disabled{opacity:.35;cursor:default}
 .selbar svg{width:20px;height:20px;flex:none}
 .selbar .selx{margin-left:2px}
-.colorpop .algrid{display:grid;grid-template-columns:repeat(6,32px);gap:4px}
+.colorpop .algrid{display:grid;grid-template-columns:repeat(6,34px);gap:4px}
 .colorpop .algrid button{width:32px;height:32px;padding:0;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--ink);box-shadow:none}
 .colorpop .algrid button svg{width:20px;height:20px}.colorpop .algrid button:disabled{opacity:.35}
 .colorpop .algrid button:hover:not(:disabled){background:var(--line)}
@@ -206,8 +232,9 @@ input:focus-visible + .tog{outline:3px solid var(--holder);outline-offset:2px}
 .penlist .pensel{cursor:pointer}.penlist .pensel:hover{text-decoration:underline}
 .zoombar{position:absolute;z-index:11;display:flex;align-items:center;gap:2px;padding:3px;border-radius:9px;background:rgba(20,30,25,.72);color:#F7F5EC;box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .zoombar[hidden]{display:none}
-.zeronote{position:absolute;z-index:12;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 28px);padding:6px 6px 6px 10px;border-radius:10px;border:2px solid var(--ol);background:#FFF4D6;color:#1E2522;font-size:.86rem;font-weight:600;box-shadow:0 3px 0 var(--ol)}
-.zeronote[hidden]{display:none}.zeronote svg{width:18px;height:18px;flex:none}
+.zeronote{flex-wrap:wrap;position:absolute;z-index:12;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 28px);padding:6px 6px 6px 10px;border-radius:10px;border:2px solid var(--ol);background:#FFF4D6;color:#1E2522;font-size:.86rem;font-weight:600;box-shadow:0 3px 0 var(--ol)}
+.zeronote[hidden]{display:none}
+@media (max-width:600px){.zeronote{left:10px;right:10px;transform:none;max-width:none;flex-wrap:nowrap;font-size:.8rem;gap:8px;padding:7px 8px 7px 10px;line-height:1.25}.zeronote span{flex:1}.zeronote button{flex:none}}.zeronote svg{width:18px;height:18px;flex:none}
 .zeronote button{flex:none;padding:5px 10px;border-radius:7px;border:1.5px solid var(--ol);background:#F2C230;color:#1E2522;font-weight:700;font-size:.82rem;box-shadow:none}
 .zoombar button{display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:28px;padding:0 6px;border:0;border-radius:6px;background:transparent;color:inherit;font:600 .8rem/1 Barlow,system-ui,sans-serif;font-variant-numeric:tabular-nums;box-shadow:none}
 .zoombar button:hover:not(:disabled){background:rgba(255,255,255,.12);transform:none;box-shadow:none}
@@ -217,6 +244,8 @@ input:focus-visible + .tog{outline:3px solid var(--holder);outline-offset:2px}
 .selbar .stylebtn .chev{width:11px;height:11px;opacity:.7}
 .selbar .stylebtn[aria-expanded="true"]{background:var(--line)}
 .colorpop{min-width:236px}
+.colorpop.sheet{position:fixed;left:0;right:0;bottom:0;top:auto;min-width:0;max-height:52vh;overflow:auto;border-radius:16px 16px 0 0;border-width:2px 0 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -3px 0 var(--ol)}
+.colorpop.sheet .cpchips{grid-template-columns:repeat(auto-fill,30px);gap:10px}.colorpop.sheet .cpchip{width:30px;height:30px}
 .colorpop .spsec{margin:2px 0 10px}.colorpop .spsec:last-child{margin-bottom:2px}
 .colorpop .splbl{font-size:.8rem;font-weight:600;color:var(--muted);margin:0 0 5px}
 .colorpop .spseg{display:flex;gap:4px}
@@ -454,7 +483,7 @@ section.box > details{margin-top:0}
 .dlgwarn{color:#B3261E;font-weight:600}
 .svgnamerow{display:flex;align-items:center;gap:6px}.svgnamerow input{flex:1;min-width:0}.svgext{color:var(--muted);font-weight:600}
 .panel .btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.panel .btns button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
+.panel .btns button{white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px}
 #save .sv svg{height:20px;width:auto;display:block}
 .moreset{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
 #calib{margin-top:4px;border-top:1px solid var(--line);padding-top:12px}
@@ -533,10 +562,10 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
 :root{--ol:#1E2522}
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){--ol:#050706} }
 :root[data-theme="dark"]{--ol:#050706}
-.filebtn,#save,#savesvg,#testbtn,#reset,#aboutbtn,#aboutclose{font-weight:700;border:2px solid var(--ol);border-radius:10px;box-shadow:0 3px 0 var(--ol);transition:transform .06s,box-shadow .06s}
+.filebtn,#save,#savesvg,#testbtn,#reset,#aboutclose{font-weight:700;border:2px solid var(--ol);border-radius:10px;box-shadow:0 3px 0 var(--ol);transition:transform .06s,box-shadow .06s}
 .filebtn{background:#3E7D5C;color:#F7F5EC}
 #save{background:#F2C230;color:#1E2522}
-#testbtn,#reset,#aboutbtn,#aboutclose{background:var(--panel);color:var(--ink)}
+#testbtn,#reset,#aboutclose{background:var(--panel);color:var(--ink)}
 #savesvg{background:#3E7D5C;color:#F7F5EC}
 @media (hover:hover){.filebtn:hover,#save:hover:not(:disabled),#savesvg:hover:not(:disabled),#testbtn:hover,#aboutbtn:hover,.openbtn:hover,.abx:hover,.dlg-btns button:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 0 var(--ol)}}
 .filebtn:active,#save:active:not(:disabled),#savesvg:active:not(:disabled),#testbtn:active,#reset:active,#aboutbtn:active,#aboutclose:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
@@ -553,11 +582,8 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
     <svg class="beam" aria-hidden="true"></svg><span class="logowrap" id="logowrap"><svg class="logo" aria-hidden="true" viewBox="23 0 154 104"> <path d="M60 64 l-6 22 h28 l-6 -22" fill="#9AA39E" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M48 96 q20 -14 40 0 z" fill="#6E7873" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="44" y="94" width="48" height="6" rx="3" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><g id="gunbody" transform="rotate(-14 68 64)"> <rect x="34" y="27" width="11" height="40" rx="5" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <rect x="42" y="30" width="54" height="34" rx="9" fill="#3E7D5C" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M52 37h8M76 37h8M52 57h8M76 57h8" stroke="#2E6A4F" stroke-width="3" stroke-linecap="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#1E2522" stroke-width="7.6" stroke-linecap="round" stroke-linejoin="round"/> <path d="M71.4 41.4 A7 7 0 1 0 73.4 47 H67.4" fill="none" stroke="#F2C230" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/> <path d="M94 34l12 7v12l-12 7z" fill="#1F4A37" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <!-- drag knife holder: knurled nut, flange, stepped silver body, blade --> <rect x="106" y="36" width="13" height="22" rx="2.5" fill="#F2C230" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M109.5 38v18M113 38v18M116.5 38v18" stroke="#C99A1B" stroke-width="1.6"/> <rect x="119" y="33.5" width="4.5" height="27" rx="1.5" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M123.5 39 H143 V55 H123.5 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M143 42 H158 Q166 42 167 47 Q166 52 158 52 H143 Z" fill="#C9D0D2" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/> <path d="M126 42.5 H140 M146 44.8 H157" stroke="#EEF2F2" stroke-width="2.2" stroke-linecap="round"/> <path d="M166 45.4 L176 47 L166 48.6 Z" fill="#1E2522" stroke="#1E2522" stroke-width="1.2" stroke-linejoin="round"/><circle id="knifetip" cx="177" cy="47" r="0.5" fill="none"/></g></svg><button type="button" id="sdbtn" aria-label="Self-destruct" tabindex="-1"><svg viewBox="0 0 140 96" aria-hidden="true"><text x="70" y="30" text-anchor="middle" textLength="128" lengthAdjust="spacingAndGlyphs" font-family="Bangers,Barlow,system-ui,sans-serif" font-size="31" letter-spacing="1" fill="#E8483C" stroke="#1E2522" stroke-width="6" stroke-linejoin="round" paint-order="stroke">SELF-DESTRUCT</text><path d="M24 70v8a46 14 0 0 0 92 0v-8z" fill="#56605B" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><ellipse cx="70" cy="70" rx="46" ry="14" fill="#9AA39E" stroke="#1E2522" stroke-width="3"/><ellipse cx="70" cy="69" rx="38" ry="10.5" fill="#1E2522"/><defs><clipPath id="sdhole"><rect x="0" y="0" width="140" height="69"/><ellipse cx="70" cy="69" rx="38" ry="10.5"/></clipPath></defs><g clip-path="url(#sdhole)"><g class="cap"><path d="M37 56v11a33 10 0 0 0 66 0v-11z" fill="#9E2219" stroke="#1E2522" stroke-width="3" stroke-linejoin="round"/><ellipse cx="70" cy="56" rx="33" ry="10" fill="#D6372B" stroke="#1E2522" stroke-width="3"/><ellipse cx="58" cy="53" rx="10" ry="3" fill="#F27A6E"/></g></g></svg></button></span>
     <div>
     <h1><span class="vh">G-code-Inator</span><svg class="titlesvg" viewBox="39 -716 6226 732" style="height:0.732em" aria-hidden="true" focusable="false"><path class="tfill" d="M47 -238V-462Q47 -535 79.5 -591.0Q112 -647 171.0 -677.5Q230 -708 307 -708Q383 -708 441.5 -678.0Q500 -648 532.5 -596.5Q565 -545 565 -482V-475Q565 -470 561.5 -466.5Q558 -463 553 -463H436Q431 -463 427.5 -466.5Q424 -470 424 -475V-478Q424 -524 392.0 -555.5Q360 -587 307 -587Q253 -587 220.5 -553.5Q188 -520 188 -466V-234Q188 -180 223.0 -146.5Q258 -113 312 -113Q364 -113 395.0 -140.5Q426 -168 426 -217V-262Q426 -267 421 -267H309Q304 -267 300.5 -270.5Q297 -274 297 -279V-371Q297 -376 300.5 -379.5Q304 -383 309 -383H553Q558 -383 561.5 -379.5Q565 -376 565 -371V-239Q565 -163 533.0 -107.0Q501 -51 442.5 -21.5Q384 8 307 8Q230 8 171.0 -23.0Q112 -54 79.5 -109.5Q47 -165 47 -238ZM640 -247V-344Q640 -349 643.5 -352.5Q647 -356 652 -356H979Q984 -356 987.5 -352.5Q991 -349 991 -344V-247Q991 -242 987.5 -238.5Q984 -235 979 -235H652Q647 -235 643.5 -238.5Q640 -242 640 -247ZM1076 -142Q1059 -192 1059 -260Q1059 -327 1076 -376Q1100 -444 1159.0 -483.0Q1218 -522 1298 -522Q1378 -522 1438.5 -482.0Q1499 -442 1519 -381Q1527 -357 1527 -345V-343Q1527 -334 1517 -332L1402 -315H1400Q1391 -315 1388 -325L1385 -341Q1378 -367 1354.0 -384.0Q1330 -401 1297 -401Q1265 -401 1243.0 -385.0Q1221 -369 1212 -341Q1201 -311 1201 -259Q1201 -207 1211 -177Q1220 -147 1242.5 -130.0Q1265 -113 1297 -113Q1328 -113 1351.5 -129.5Q1375 -146 1384 -175Q1385 -177 1385 -181Q1386 -182 1386 -184Q1387 -196 1400 -194L1515 -176Q1525 -174 1525 -165Q1525 -157 1519 -135Q1498 -68 1437.5 -30.0Q1377 8 1298 8Q1218 8 1159.5 -32.0Q1101 -72 1076 -142ZM1604 -156Q1590 -203 1590 -258Q1590 -317 1604 -364Q1627 -438 1687.0 -480.0Q1747 -522 1831 -522Q1913 -522 1971.0 -480.5Q2029 -439 2053 -365Q2069 -315 2069 -260Q2069 -206 2055 -159Q2033 -81 1973.5 -36.5Q1914 8 1830 8Q1746 8 1686.0 -36.0Q1626 -80 1604 -156ZM1919 -188Q1927 -220 1927 -258Q1927 -300 1919 -329Q1908 -363 1885.0 -382.0Q1862 -401 1829 -401Q1795 -401 1772.5 -382.0Q1750 -363 1740 -329Q1732 -305 1732 -258Q1732 -213 1739 -188Q1749 -153 1772.5 -133.0Q1796 -113 1830 -113Q1863 -113 1886.0 -133.0Q1909 -153 1919 -188ZM2491 -700H2608Q2613 -700 2616.5 -696.5Q2620 -693 2620 -688V-12Q2620 -7 2616.5 -3.5Q2613 0 2608 0H2491Q2486 0 2482.5 -3.5Q2479 -7 2479 -12V-45Q2479 -48 2477.0 -48.5Q2475 -49 2473 -47Q2431 8 2358 8Q2288 8 2237.5 -31.0Q2187 -70 2165 -138Q2148 -190 2148 -259Q2148 -330 2166 -383Q2189 -447 2238.5 -484.5Q2288 -522 2361 -522Q2433 -522 2473 -472Q2475 -469 2477.0 -470.0Q2479 -471 2479 -474V-688Q2479 -693 2482.5 -696.5Q2486 -700 2491 -700ZM2478 -257Q2478 -324 2456 -362Q2433 -401 2389 -401Q2342 -401 2318 -362Q2293 -323 2293 -256Q2293 -196 2314 -156Q2339 -113 2388 -113Q2433 -113 2458 -156Q2478 -193 2478 -257ZM3185 -225Q3184 -213 3172 -213H2863Q2857 -213 2859 -208Q2862 -188 2870 -168Q2896 -112 2976 -112Q3040 -113 3077 -164Q3081 -170 3086 -170Q3089 -170 3093 -166L3165 -95Q3170 -90 3170 -86Q3170 -84 3166 -78Q3133 -37 3081.0 -14.5Q3029 8 2967 8Q2881 8 2821.5 -31.0Q2762 -70 2736 -140Q2715 -190 2715 -271Q2715 -326 2730 -368Q2753 -439 2810.5 -481.0Q2868 -523 2947 -523Q3047 -523 3107.5 -465.0Q3168 -407 3181 -310Q3187 -272 3185 -225ZM2865 -342Q2861 -329 2858 -310Q2858 -305 2863 -305H3036Q3042 -305 3040 -310Q3035 -339 3035 -338Q3026 -368 3003.5 -384.5Q2981 -401 2948 -401Q2885 -401 2865 -342ZM3249 -247V-344Q3249 -349 3252.5 -352.5Q3256 -356 3261 -356H3588Q3593 -356 3596.5 -352.5Q3600 -349 3600 -344V-247Q3600 -242 3596.5 -238.5Q3593 -235 3588 -235H3261Q3256 -235 3252.5 -238.5Q3249 -242 3249 -247ZM3690 -12V-688Q3690 -693 3693.5 -696.5Q3697 -700 3702 -700H3819Q3824 -700 3827.5 -696.5Q3831 -693 3831 -688V-12Q3831 -7 3827.5 -3.5Q3824 0 3819 0H3702Q3697 0 3693.5 -3.5Q3690 -7 3690 -12ZM4390 -340V-12Q4390 -7 4386.5 -3.5Q4383 0 4378 0H4261Q4256 0 4252.5 -3.5Q4249 -7 4249 -12V-311Q4249 -351 4226.5 -376.0Q4204 -401 4167 -401Q4130 -401 4107.5 -376.0Q4085 -351 4085 -311V-12Q4085 -7 4081.5 -3.5Q4078 0 4073 0H3956Q3951 0 3947.5 -3.5Q3944 -7 3944 -12V-502Q3944 -507 3947.5 -510.5Q3951 -514 3956 -514H4073Q4078 -514 4081.5 -510.5Q4085 -507 4085 -502V-467Q4085 -464 4087.0 -463.0Q4089 -462 4090 -464Q4131 -522 4212 -522Q4292 -522 4341.0 -473.0Q4390 -424 4390 -340ZM4920 -351V-12Q4920 -7 4916.5 -3.5Q4913 0 4908 0H4791Q4786 0 4782.5 -3.5Q4779 -7 4779 -12V-45Q4779 -48 4777.0 -49.0Q4775 -50 4773 -47Q4731 8 4638 8Q4560 8 4512.0 -30.0Q4464 -68 4464 -142Q4464 -219 4518.0 -261.5Q4572 -304 4672 -304H4774Q4779 -304 4779 -309V-331Q4779 -364 4759.0 -382.5Q4739 -401 4699 -401Q4668 -401 4647.5 -390.0Q4627 -379 4621 -359Q4618 -348 4608 -349L4487 -365Q4475 -367 4476 -374Q4480 -416 4509.5 -450.0Q4539 -484 4587.5 -503.0Q4636 -522 4696 -522Q4761 -522 4812.0 -499.5Q4863 -477 4891.5 -438.0Q4920 -399 4920 -351ZM4779 -179V-215Q4779 -220 4774 -220H4702Q4657 -220 4631.5 -203.0Q4606 -186 4606 -155Q4606 -128 4625.0 -112.5Q4644 -97 4676 -97Q4719 -97 4749.0 -120.0Q4779 -143 4779 -179ZM5291 -401H5195Q5190 -401 5190 -396V-184Q5190 -151 5203.5 -135.0Q5217 -119 5247 -119H5280Q5285 -119 5288.5 -115.5Q5292 -112 5292 -107V-12Q5292 -1 5280 1Q5238 3 5220 3Q5137 3 5096.0 -24.5Q5055 -52 5054 -128V-396Q5054 -401 5049 -401H4992Q4987 -401 4983.5 -404.5Q4980 -408 4980 -413V-502Q4980 -507 4983.5 -510.5Q4987 -514 4992 -514H5049Q5054 -514 5054 -519V-638Q5054 -643 5057.5 -646.5Q5061 -650 5066 -650H5178Q5183 -650 5186.5 -646.5Q5190 -643 5190 -638V-519Q5190 -514 5195 -514H5291Q5296 -514 5299.5 -510.5Q5303 -507 5303 -502V-413Q5303 -408 5299.5 -404.5Q5296 -401 5291 -401ZM5382 -156Q5368 -203 5368 -258Q5368 -317 5382 -364Q5405 -438 5465.0 -480.0Q5525 -522 5609 -522Q5691 -522 5749.0 -480.5Q5807 -439 5831 -365Q5847 -315 5847 -260Q5847 -206 5833 -159Q5811 -81 5751.5 -36.5Q5692 8 5608 8Q5524 8 5464.0 -36.0Q5404 -80 5382 -156ZM5697 -188Q5705 -220 5705 -258Q5705 -300 5697 -329Q5686 -363 5663.0 -382.0Q5640 -401 5607 -401Q5573 -401 5550.5 -382.0Q5528 -363 5518 -329Q5510 -305 5510 -258Q5510 -213 5517 -188Q5527 -153 5550.5 -133.0Q5574 -113 5608 -113Q5641 -113 5664.0 -133.0Q5687 -153 5697 -188ZM6251 -507Q6259 -503 6257 -492L6236 -378Q6235 -366 6222 -371Q6207 -376 6187 -376Q6179 -376 6165 -374Q6129 -371 6104.0 -347.5Q6079 -324 6079 -285V-12Q6079 -7 6075.5 -3.5Q6072 0 6067 0H5950Q5945 0 5941.5 -3.5Q5938 -7 5938 -12V-502Q5938 -507 5941.5 -510.5Q5945 -514 5950 -514H6067Q6072 -514 6075.5 -510.5Q6079 -507 6079 -502V-464Q6079 -461 6081.0 -460.0Q6083 -459 6084 -461Q6125 -521 6194 -521Q6230 -521 6251 -507Z" fill="#F2C230"/><g class="tstrokes" fill="none" stroke-linejoin="round" stroke-linecap="round"></g><path class="to" d="M47 -238V-462Q47 -535 79.5 -591.0Q112 -647 171.0 -677.5Q230 -708 307 -708Q383 -708 441.5 -678.0Q500 -648 532.5 -596.5Q565 -545 565 -482V-475Q565 -470 561.5 -466.5Q558 -463 553 -463H436Q431 -463 427.5 -466.5Q424 -470 424 -475V-478Q424 -524 392.0 -555.5Q360 -587 307 -587Q253 -587 220.5 -553.5Q188 -520 188 -466V-234Q188 -180 223.0 -146.5Q258 -113 312 -113Q364 -113 395.0 -140.5Q426 -168 426 -217V-262Q426 -267 421 -267H309Q304 -267 300.5 -270.5Q297 -274 297 -279V-371Q297 -376 300.5 -379.5Q304 -383 309 -383H553Q558 -383 561.5 -379.5Q565 -376 565 -371V-239Q565 -163 533.0 -107.0Q501 -51 442.5 -21.5Q384 8 307 8Q230 8 171.0 -23.0Q112 -54 79.5 -109.5Q47 -165 47 -238ZM640 -247V-344Q640 -349 643.5 -352.5Q647 -356 652 -356H979Q984 -356 987.5 -352.5Q991 -349 991 -344V-247Q991 -242 987.5 -238.5Q984 -235 979 -235H652Q647 -235 643.5 -238.5Q640 -242 640 -247ZM1076 -142Q1059 -192 1059 -260Q1059 -327 1076 -376Q1100 -444 1159.0 -483.0Q1218 -522 1298 -522Q1378 -522 1438.5 -482.0Q1499 -442 1519 -381Q1527 -357 1527 -345V-343Q1527 -334 1517 -332L1402 -315H1400Q1391 -315 1388 -325L1385 -341Q1378 -367 1354.0 -384.0Q1330 -401 1297 -401Q1265 -401 1243.0 -385.0Q1221 -369 1212 -341Q1201 -311 1201 -259Q1201 -207 1211 -177Q1220 -147 1242.5 -130.0Q1265 -113 1297 -113Q1328 -113 1351.5 -129.5Q1375 -146 1384 -175Q1385 -177 1385 -181Q1386 -182 1386 -184Q1387 -196 1400 -194L1515 -176Q1525 -174 1525 -165Q1525 -157 1519 -135Q1498 -68 1437.5 -30.0Q1377 8 1298 8Q1218 8 1159.5 -32.0Q1101 -72 1076 -142ZM1604 -156Q1590 -203 1590 -258Q1590 -317 1604 -364Q1627 -438 1687.0 -480.0Q1747 -522 1831 -522Q1913 -522 1971.0 -480.5Q2029 -439 2053 -365Q2069 -315 2069 -260Q2069 -206 2055 -159Q2033 -81 1973.5 -36.5Q1914 8 1830 8Q1746 8 1686.0 -36.0Q1626 -80 1604 -156ZM1919 -188Q1927 -220 1927 -258Q1927 -300 1919 -329Q1908 -363 1885.0 -382.0Q1862 -401 1829 -401Q1795 -401 1772.5 -382.0Q1750 -363 1740 -329Q1732 -305 1732 -258Q1732 -213 1739 -188Q1749 -153 1772.5 -133.0Q1796 -113 1830 -113Q1863 -113 1886.0 -133.0Q1909 -153 1919 -188ZM2491 -700H2608Q2613 -700 2616.5 -696.5Q2620 -693 2620 -688V-12Q2620 -7 2616.5 -3.5Q2613 0 2608 0H2491Q2486 0 2482.5 -3.5Q2479 -7 2479 -12V-45Q2479 -48 2477.0 -48.5Q2475 -49 2473 -47Q2431 8 2358 8Q2288 8 2237.5 -31.0Q2187 -70 2165 -138Q2148 -190 2148 -259Q2148 -330 2166 -383Q2189 -447 2238.5 -484.5Q2288 -522 2361 -522Q2433 -522 2473 -472Q2475 -469 2477.0 -470.0Q2479 -471 2479 -474V-688Q2479 -693 2482.5 -696.5Q2486 -700 2491 -700ZM2478 -257Q2478 -324 2456 -362Q2433 -401 2389 -401Q2342 -401 2318 -362Q2293 -323 2293 -256Q2293 -196 2314 -156Q2339 -113 2388 -113Q2433 -113 2458 -156Q2478 -193 2478 -257ZM3185 -225Q3184 -213 3172 -213H2863Q2857 -213 2859 -208Q2862 -188 2870 -168Q2896 -112 2976 -112Q3040 -113 3077 -164Q3081 -170 3086 -170Q3089 -170 3093 -166L3165 -95Q3170 -90 3170 -86Q3170 -84 3166 -78Q3133 -37 3081.0 -14.5Q3029 8 2967 8Q2881 8 2821.5 -31.0Q2762 -70 2736 -140Q2715 -190 2715 -271Q2715 -326 2730 -368Q2753 -439 2810.5 -481.0Q2868 -523 2947 -523Q3047 -523 3107.5 -465.0Q3168 -407 3181 -310Q3187 -272 3185 -225ZM2865 -342Q2861 -329 2858 -310Q2858 -305 2863 -305H3036Q3042 -305 3040 -310Q3035 -339 3035 -338Q3026 -368 3003.5 -384.5Q2981 -401 2948 -401Q2885 -401 2865 -342ZM3249 -247V-344Q3249 -349 3252.5 -352.5Q3256 -356 3261 -356H3588Q3593 -356 3596.5 -352.5Q3600 -349 3600 -344V-247Q3600 -242 3596.5 -238.5Q3593 -235 3588 -235H3261Q3256 -235 3252.5 -238.5Q3249 -242 3249 -247ZM3690 -12V-688Q3690 -693 3693.5 -696.5Q3697 -700 3702 -700H3819Q3824 -700 3827.5 -696.5Q3831 -693 3831 -688V-12Q3831 -7 3827.5 -3.5Q3824 0 3819 0H3702Q3697 0 3693.5 -3.5Q3690 -7 3690 -12ZM4390 -340V-12Q4390 -7 4386.5 -3.5Q4383 0 4378 0H4261Q4256 0 4252.5 -3.5Q4249 -7 4249 -12V-311Q4249 -351 4226.5 -376.0Q4204 -401 4167 -401Q4130 -401 4107.5 -376.0Q4085 -351 4085 -311V-12Q4085 -7 4081.5 -3.5Q4078 0 4073 0H3956Q3951 0 3947.5 -3.5Q3944 -7 3944 -12V-502Q3944 -507 3947.5 -510.5Q3951 -514 3956 -514H4073Q4078 -514 4081.5 -510.5Q4085 -507 4085 -502V-467Q4085 -464 4087.0 -463.0Q4089 -462 4090 -464Q4131 -522 4212 -522Q4292 -522 4341.0 -473.0Q4390 -424 4390 -340ZM4920 -351V-12Q4920 -7 4916.5 -3.5Q4913 0 4908 0H4791Q4786 0 4782.5 -3.5Q4779 -7 4779 -12V-45Q4779 -48 4777.0 -49.0Q4775 -50 4773 -47Q4731 8 4638 8Q4560 8 4512.0 -30.0Q4464 -68 4464 -142Q4464 -219 4518.0 -261.5Q4572 -304 4672 -304H4774Q4779 -304 4779 -309V-331Q4779 -364 4759.0 -382.5Q4739 -401 4699 -401Q4668 -401 4647.5 -390.0Q4627 -379 4621 -359Q4618 -348 4608 -349L4487 -365Q4475 -367 4476 -374Q4480 -416 4509.5 -450.0Q4539 -484 4587.5 -503.0Q4636 -522 4696 -522Q4761 -522 4812.0 -499.5Q4863 -477 4891.5 -438.0Q4920 -399 4920 -351ZM4779 -179V-215Q4779 -220 4774 -220H4702Q4657 -220 4631.5 -203.0Q4606 -186 4606 -155Q4606 -128 4625.0 -112.5Q4644 -97 4676 -97Q4719 -97 4749.0 -120.0Q4779 -143 4779 -179ZM5291 -401H5195Q5190 -401 5190 -396V-184Q5190 -151 5203.5 -135.0Q5217 -119 5247 -119H5280Q5285 -119 5288.5 -115.5Q5292 -112 5292 -107V-12Q5292 -1 5280 1Q5238 3 5220 3Q5137 3 5096.0 -24.5Q5055 -52 5054 -128V-396Q5054 -401 5049 -401H4992Q4987 -401 4983.5 -404.5Q4980 -408 4980 -413V-502Q4980 -507 4983.5 -510.5Q4987 -514 4992 -514H5049Q5054 -514 5054 -519V-638Q5054 -643 5057.5 -646.5Q5061 -650 5066 -650H5178Q5183 -650 5186.5 -646.5Q5190 -643 5190 -638V-519Q5190 -514 5195 -514H5291Q5296 -514 5299.5 -510.5Q5303 -507 5303 -502V-413Q5303 -408 5299.5 -404.5Q5296 -401 5291 -401ZM5382 -156Q5368 -203 5368 -258Q5368 -317 5382 -364Q5405 -438 5465.0 -480.0Q5525 -522 5609 -522Q5691 -522 5749.0 -480.5Q5807 -439 5831 -365Q5847 -315 5847 -260Q5847 -206 5833 -159Q5811 -81 5751.5 -36.5Q5692 8 5608 8Q5524 8 5464.0 -36.0Q5404 -80 5382 -156ZM5697 -188Q5705 -220 5705 -258Q5705 -300 5697 -329Q5686 -363 5663.0 -382.0Q5640 -401 5607 -401Q5573 -401 5550.5 -382.0Q5528 -363 5518 -329Q5510 -305 5510 -258Q5510 -213 5517 -188Q5527 -153 5550.5 -133.0Q5574 -113 5608 -113Q5641 -113 5664.0 -133.0Q5687 -153 5697 -188ZM6251 -507Q6259 -503 6257 -492L6236 -378Q6235 -366 6222 -371Q6207 -376 6187 -376Q6179 -376 6165 -374Q6129 -371 6104.0 -347.5Q6079 -324 6079 -285V-12Q6079 -7 6075.5 -3.5Q6072 0 6067 0H5950Q5945 0 5941.5 -3.5Q5938 -7 5938 -12V-502Q5938 -507 5941.5 -510.5Q5945 -514 5950 -514H6067Q6072 -514 6075.5 -510.5Q6079 -507 6079 -502V-464Q6079 -461 6081.0 -460.0Q6083 -459 6084 -461Q6125 -521 6194 -521Q6230 -521 6251 -507Z" fill="none" stroke="#C99A1B" stroke-width="30" stroke-linejoin="round"/><circle class="tdot" r="105" fill="#F2C230" stroke="#1E2522" stroke-width="26" style="opacity:0"/></svg></h1>
-    <p class="tagline">SVG in, <span class="nw">G-code</span> out. For CNC drag knife cutting and pen plotting.</p>
+    <p class="tagline">SVG in, <span class="nw">G-code</span> out.</p>
     </div>
-  </div>
-  <div class="topr">
-    <button class="ghost" id="aboutbtn" type="button" aria-haspopup="dialog" aria-label="About G-code-Inator"><svg class="abi" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><circle cx="10" cy="5.6" r="1.6" fill="currentColor"/><path d="M10 9v6.5" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg><span class="abt">About</span></button>
   </div>
 </header>
 <div class="shapemenu" id="shapemenu" role="menu" hidden></div>
@@ -667,7 +693,7 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
     </div>
     <div class="matnotes"><span class="status" id="loaded"></span><div class="hint sizenote" id="sizenote" hidden>This SVG has no size in mm, so 1 unit is treated as 1 pixel (96 per inch).</div></div>
     <canvas id="cv" aria-label="Cut preview"></canvas>
-    <div class="zeronote" id="zeronote" role="alert" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 18.5 17h-17z" fill="#F2C230" stroke="#1E2522" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8v4.2" stroke="#1E2522" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.6" r="1" fill="#1E2522"/></svg><span>Part of the design is past zero, where the machine can’t go.</span><button type="button" id="zerofix">Move it back</button></div>
+    <div class="zeronote" id="zeronote" role="alert" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 18.5 17h-17z" fill="#F2C230" stroke="#1E2522" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8v4.2" stroke="#1E2522" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.6" r="1" fill="#1E2522"/></svg><span>Part of the design is past zero, where the machine can’t go.</span><button type="button" id="zerofix">Move inside</button></div>
     <div class="zoombar" id="zoombar" hidden><button type="button" id="zout" aria-label="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><button type="button" id="zpct" aria-label="Zoom to fit">100%</button><button type="button" id="zin" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
     <div class="selbar" id="selbar" role="toolbar" aria-label="Selected shapes" hidden><span class="selgrp pen-only" id="barstyle"><button type="button" class="stylebtn" id="fillbtn" aria-haspopup="dialog" aria-expanded="false"><span class="sw" id="fillsw"></span><span class="stl">Fill</span><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="stylebtn" id="linebtn" aria-haspopup="dialog" aria-expanded="false"><span class="sw" id="linesw"></span><span class="stl">Outline</span><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span><span class="selgrp"><button type="button" id="alignbtn" aria-label="Align" title="Align and distribute" aria-haspopup="dialog" aria-expanded="false"></button><span class="wslot"><button type="button" id="weldbtn" title="Weld: join the selected shapes into one"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 6.23A6.5 6.5 0 1 0 12 17.77 6.5 6.5 0 1 0 12 6.23Z" fill="currentColor" fill-opacity=".18"/></svg><span>Weld</span></button><button type="button" id="unweldbtn" hidden title="Unweld: split back into the original shapes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="12" r="5"/><circle cx="17.5" cy="12" r="4.5"/></svg><span>Unweld</span></button></span><button type="button" id="hidebtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="eyeo"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></g><path class="eyex" d="M4 4l16 16"/></svg><span id="hidelbl">Hide</span></button></span><span class="selgrp"><button type="button" id="selallbtn" aria-label="Select All"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-dasharray="3 2.4" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/></svg></button></span><button type="button" id="selclose" class="selx" aria-label="Deselect" title="Deselect (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>
     <div class="empty" id="empty"></div>
@@ -706,6 +732,7 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   </div>
 </main>
 </div>
+<footer class="appfoot"><button type="button" class="footlink" id="aboutbtn" aria-haspopup="dialog">About G-code-Inator</button><span aria-hidden="true">·</span><a class="footlink" href="https://github.com/daviddarts/gcodeinator" target="_blank" rel="noopener">Source on GitHub</a></footer>
 
 <dialog id="savedlg" class="smalldlg" aria-labelledby="savedlg-h">
   <div class="dlg-head"><h2 id="savedlg-h">Save Preset</h2></div>
@@ -1053,6 +1080,16 @@ function trimUnder(p, covers){ return splitKeep(p, covers, m=>!covers.some(U=>in
 // (a letter O and its counter, one letter of converted text, one blob of a combined path).
 function splitIslands(parts){
   const rings=parts.filter(p=>p.closed), open=parts.filter(p=>!p.closed);
+  // Once shapes are named, they stay the shapes they were: moving one over another never merges them or
+  // turns one into a hole. A hole becomes a shape of its own only when it's been moved out of its shape.
+  if(rings.length && rings.every(p=>p.ik)){
+    const pip=(pt,r)=>{ let c=false; for(let i=0,j=r.length-1;i<r.length;j=i++){ const a=r[i],b=r[j]; if((a[1]>pt[1])!==(b[1]>pt[1]) && pt[0]<(b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0]) c=!c; } return c; };
+    const outer=new Map(); for(const p of rings) if(!p.hk && !outer.has(p.ik)) outer.set(p.ik,p);
+    const groups=new Map();
+    for(const p of rings){ let id=p.ik; if(p.hk){ const o=outer.get(p.ik); if(!o || !pip(p.pts[0],o.pts)) id=p.hk; }
+      if(!groups.has(id)) groups.set(id,[]); const g=groups.get(id); if(id===p.hk || !p.hk) g.unshift(p); else g.push(p); }
+    const isl=[...groups.values()]; isl[0].push(...open); return isl;
+  }
   const area=r=>{ let a=0; for(let i=0;i<r.length-1;i++) a+=r[i][0]*r[i+1][1]-r[i+1][0]*r[i][1]; return Math.abs(a/2); };
   const inside=(pt,r)=>{ let c=false; for(let i=0,j=r.length-1;i<r.length;j=i++){ const a=r[i],b=r[j]; if((a[1]>pt[1])!==(b[1]>pt[1]) && pt[0]<(b[0]-a[0])*(pt[1]-a[1])/(b[1]-a[1])+a[0]) c=!c; } return c; };
   const info=rings.map(p=>({p,a:area(p.pts),probe:p.pts[0]}));
@@ -1081,7 +1118,7 @@ function makeInfill(shapes, s){
   const els=[];
   for(const E0 of [...byEl.values()].sort((a,b)=>a.el-b.el))
     splitIslands(E0.parts).forEach((parts,i)=>{
-      els.push({el:E0.el,isl:i,key:(parts[0]&&parts[0].ik)||E0.el+':'+i,fill:E0.fill,stroke:E0.stroke,rule:E0.rule,parts,rings:parts.filter(p=>p.closed).map(p=>p.pts)});
+      els.push({el:E0.el,isl:i,key:(parts[0]&&(parts[0].hk||parts[0].ik))||E0.el+':'+i,fill:E0.fill,stroke:E0.stroke,rule:E0.rule,parts,rings:parts.filter(p=>p.closed).map(p=>p.pts)});
       // a hole someone chose to fill becomes a shape of its own
       parts.forEach((p,j)=>{ const k=p.hk||E0.el+':'+i+':h'+j, t=s.fillOv&&s.fillOv.get(k); if(j>0 && p.closed && t && t!=='off')
         els.push({el:E0.el,isl:i+0.5,key:k,fill:E0.fill,stroke:E0.stroke,rule:'nonzero',parts:[],rings:[p.pts],forced:true}); });
@@ -1101,7 +1138,8 @@ function makeInfill(shapes, s){
   }
   const overlap=(A,B)=>!(A.x1<B.x0||A.x0>B.x1||A.y1<B.y0||A.y0>B.y1);
   const opaque=els.filter(E=>E.opaque);
-  const coversOf=E=>opaque.filter(U=>U.el>E.el && overlap(U.bb,E.bb));
+  // a shape later in the drawing sits on top; shapes from the same element keep their own order too
+  const coversOf=E=>opaque.filter(U=>(U.el>E.el || (U.el===E.el && U.isl>E.isl && U.key!==E.key)) && overlap(U.bb,E.bb));
   const hatches=[], outlines=[];
   // Outlines
   for(const E of els){
@@ -2159,6 +2197,7 @@ function togglePlay(){
   if(anim.n<2) return;
   if(anim.playing){ stopAnim(); syncAnimUI(); return; }
   if(anim.t>=anim.total){ anim.t=0; anim.i=0; }
+  if(vz.k!==1||vz.cx!==null) zoomFit();
   anim.playing=true; anim.last=performance.now(); syncAnimUI(); anim.raf=requestAnimationFrame(tick);
 }
 // A small pen in the same style as the Pen button, with its barrel in the pen's colour.
@@ -2258,7 +2297,6 @@ function drawSel(ctx){
   ctx.save(); ctx.lineJoin='round';
   if(sel.hover && !sel.box && !sel.keys.has(sel.hover)){ const h=hitByKey(sel.hover); if(h){ path(h.rings); ctx.lineWidth=4; ctx.strokeStyle='rgba(30,37,34,.35)'; ctx.stroke(); ctx.lineWidth=1.6; ctx.strokeStyle='rgba(247,245,236,.9)'; ctx.stroke(); } }
   const hs=[...(sel.boxHits||sel.keys)].map(hitByKey).filter(Boolean);
-  if(sel.mv){ ctx.translate(sel.mv.dx,sel.mv.dy); }
   { const hh=hs.filter(h=>h.hid); if(hh.length){ path(hh.flatMap(h=>h.rings)); ctx.lineWidth=1.5; ctx.strokeStyle='rgba(247,245,236,.6)'; ctx.stroke(); } }
   const shown=hs.filter(h=>!h.hid);
   const lit=shown.filter(h=>!(mode==='pen'&&state.lineOff.has(h.key))), bare=shown.filter(h=>mode==='pen'&&state.lineOff.has(h.key));
@@ -2810,8 +2848,12 @@ $('savesvg').addEventListener('click',openSvgSave);
 $('svgcancel').addEventListener('click',()=>$('svgdlg').close());
 $('svgform').addEventListener('submit',e=>{ e.preventDefault(); const n=$('svgname').value.trim(); if(!n){ $('svgmsg').textContent='Give the file a name.'; return; } $('svgdlg').close(); if(nameDlgDone) nameDlgDone(n); });
 
-$('zerofix').addEventListener('click',()=>{ const p=state.job&&state.job.pos; if(!p) return; const D=defs();
-  if(p.x<0) $('margin').value=String(+((+$('margin').value||0)+D.margin-p.x).toFixed(4)); if(p.y<0) $('marginy').value=String(+((+$('marginy').value||0)+D.marginy-p.y).toFixed(4)); update(); });
+// Move inside: each shape that's past zero slides back in, 4 mm from zero; everything else stays where it is
+$('zerofix').addEventListener('click',()=>{ if(!state.job) return; const D=defs(), hs=hitShapes().filter(h=>!h.hid);
+  const per=[], moved=new Set();
+  for(const h of hs.filter(h=>!h.hole)){ const dx=h.bb.x0<0?D.margin-h.bb.x0:0, dy=h.bb.y0<0?D.marginy-h.bb.y0:0; if(dx||dy){ per.push([h.key,[dx,dy]]); moved.add(h.key); } }
+  for(const h of hs.filter(h=>h.hole)){ if(moved.has(h.key.split(':h')[0])) continue; const dx=h.bb.x0<0?D.margin-h.bb.x0:0, dy=h.bb.y0<0?D.marginy-h.bb.y0:0; if(dx||dy) per.push([h.key,[dx,dy]]); }
+  if(per.length) moveShapes(per,false); else update(); });
 $('aspeed').addEventListener('change',()=>{ state.autoSpeed=false; state.manualTotal=anim.total; });
 // ===== Selecting shapes on the mat =====
 // Click selects a shape, Shift-click adds or removes, dragging on an empty part of the mat draws a selection box,
@@ -2829,7 +2871,7 @@ function hitShapes(){
   for(const [el,parts] of byEl) splitIslands(parts).forEach((ps,i)=>{
     const cl=ps.filter(p=>p.closed); if(!cl.length) return;
     const rings=cl.map(p=>p.pts), o=cl[0];
-    out.push({key:o.ik||el+':'+i, el, hid:!!o.hid, rule:o.rule, rings, outer:rings[0], hole:false, def:!!hatchColorOf(parts[0]), bb:bbox([o]), area:ringArea(rings[0]), wid:o.wid});
+    out.push({key:o.hk||o.ik||el+':'+i, el, hid:!!o.hid, rule:o.rule, rings, outer:rings[0], hole:false, def:!!hatchColorOf(parts[0]), bb:bbox([o]), area:ringArea(rings[0]), wid:o.wid});
     ps.forEach((p,j)=>{ if(j>0 && p.closed) out.push({key:p.hk||el+':'+i+':h'+j, el, hid:!!p.hid, rings:[p.pts], outer:p.pts, hole:true, def:false, bb:bbox([p]), area:ringArea(p.pts), wid:o.wid}); });
   });
   sel.cache=out; sel.ver=state.jobVer;
@@ -3004,6 +3046,9 @@ function syncZoomUI(){ placeZeroNote();
   const endPan=e=>{ if(!pan) return; e.stopImmediatePropagation(); pan=null; cv.style.cursor=spaceDown?'grab':''; };
   cv.addEventListener('pointerup',endPan,true); cv.addEventListener('pointercancel',endPan,true);
   cv.addEventListener('auxclick',e=>{ if(e.button===1) e.preventDefault(); });
+  cv.addEventListener('dblclick',e=>{ if(state.job && !shapeAt(e)) zoomFit(); });
+  let lastTap=null; cv.addEventListener('pointerup',e=>{ if(e.pointerType!=='touch'||!state.job) return; const now=Date.now();
+    if(lastTap && now-lastTap.t<320 && Math.hypot(e.clientX-lastTap.x,e.clientY-lastTap.y)<30 && !shapeAt(e)){ zoomFit(); lastTap=null; } else lastTap={t:now,x:e.clientX,y:e.clientY}; });
   // two fingers: pinch to zoom, move to pan (one finger still scrolls the page)
   let tp=null;
   const two=e=>{ const r=cv.getBoundingClientRect(), a=e.touches[0], b=e.touches[1]; return {x:(a.clientX+b.clientX)/2-r.left, y:(a.clientY+b.clientY)/2-r.top, d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)}; };
@@ -3019,7 +3064,7 @@ function syncZoomUI(){ placeZeroNote();
   });
   window.addEventListener('resize',syncZoomUI);
   const mac=/Mac|iPhone|iPad/.test(navigator.platform), K=mac?'⌘':'Ctrl+';
-  $('zin').title='Zoom in ('+K+'+)'; $('zout').title='Zoom out ('+K+'−)'; $('zpct').title='Fit the design ('+K+'0)';
+  $('zin').title='Zoom in ('+K+'+)'; $('zout').title='Zoom out ('+K+'−)'; $('zpct').title='Fit the design ('+K+'0, or double-click empty mat)';
 }
 // ===== Move, nudge, align and distribute =====
 // Moves are kept per shape in the drawing's own units (before sizing and rotating), so they stay right
@@ -3040,10 +3085,22 @@ function moveShapes(perKey,merge){   // perKey: [[key,[dx,dy] on the mat]]
   const go=()=>{ for(const [key,d] of perKey){ const u=toDrawing(d[0],d[1]); for(const k of expandKeys([key])){ const m=state.moves.get(k)||[0,0]; state.moves.set(k,[m[0]+u[0],m[1]+u[1]]); } } update(); syncSelBar(); };
   if(merge) go(); else commit(go);
 }
+// Dragging: the shapes themselves follow the pointer; the whole drag is one Undo.
+function liveMove(d,dx,dy){
+  const v=state.view; if(!v) return;
+  if(!d.live){ sel.undo.push(snapSel()); if(sel.undo.length>200) sel.undo.shift(); sel.redo=[];
+    const keys=[...sel.keys].filter(k=>hitByKey(k)); d.live={base:new Map([...state.moves].map(([k,m])=>[k,m.slice()])), keys:expandKeys(keys), sc:v.sc, raf:0}; }
+  d.live.dx=dx/d.live.sc; d.live.dy=-dy/d.live.sc;
+  if(!d.live.raf) d.live.raf=requestAnimationFrame(()=>{ d.live.raf=0; applyLive(d); update(); });
+}
+function applyLive(d){ const L=d.live, u=toDrawing(L.dx||0,L.dy||0), m=new Map([...L.base].map(([k,v])=>[k,v.slice()]));
+  for(const k of L.keys){ const o=m.get(k)||[0,0]; m.set(k,[o[0]+u[0],o[1]+u[1]]); } state.moves=m; }
 function moveSelection(dx,dy,merge){ const hs=[...sel.keys].map(hitByKey).filter(Boolean); if(!hs.length) return; moveShapes(hs.map(h=>[h.key,[dx,dy]]),merge); }
 function alignSel(how){
-  const hs=[...sel.keys].map(hitByKey).filter(Boolean); if(hs.length<2) return;
-  let X0=Infinity,Y0=Infinity,X1=-Infinity,Y1=-Infinity; for(const h of hs){ X0=Math.min(X0,h.bb.x0); Y0=Math.min(Y0,h.bb.y0); X1=Math.max(X1,h.bb.x1); Y1=Math.max(Y1,h.bb.y1); }
+  const hs=[...sel.keys].map(hitByKey).filter(Boolean); if(!hs.length) return;
+  // one shape aligns to the whole design (like aligning to the artboard); several align to their own bounds
+  const ref=hs.length===1?hitShapes().filter(h=>!h.hid&&!h.hole):hs;
+  let X0=Infinity,Y0=Infinity,X1=-Infinity,Y1=-Infinity; for(const h of ref){ X0=Math.min(X0,h.bb.x0); Y0=Math.min(Y0,h.bb.y0); X1=Math.max(X1,h.bb.x1); Y1=Math.max(Y1,h.bb.y1); }
   let per=[];
   if(how==='dh'||how==='dv'){
     if(hs.length<3) return; const hz=how==='dh', lo=s=>hz?s.bb.x0:s.bb.y0, hi=s=>hz?s.bb.x1:s.bb.y1;
@@ -3065,14 +3122,17 @@ const alignIcon=d=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" s
 function renderAlignPop(){
   const p=$('colorpop'); FRHOLD.append(FILLROWS); p.innerHTML=''; p.dataset.kind='align';
   const n=[...sel.keys].map(hitByKey).filter(Boolean).length;
-  const grid=document.createElement('div'); grid.className='algrid';
-  for(const [k,label,d] of ALIGN){ const b=document.createElement('button'); b.type='button'; b.title=label; b.setAttribute('aria-label',label); b.innerHTML=alignIcon(d); b.disabled=k[0]==='d'?n<3:n<2; b.onclick=()=>alignSel(k); grid.append(b); }
-  p.append(grid);
-  if(n<2){ const t=document.createElement('div'); t.className='spnote'; t.textContent='Select two or more shapes to align them.'; p.append(t); }
+  const block=(title,keys,on,note)=>{ const s=document.createElement('div'); s.className='spsec';
+    const l=document.createElement('div'); l.className='splbl'; l.textContent=title; s.append(l);
+    const g=document.createElement('div'); g.className='algrid';
+    for(const [k,label,d] of ALIGN.filter(a=>keys.includes(a[0]))){ const b=document.createElement('button'); b.type='button'; b.title=label; b.setAttribute('aria-label',label); b.innerHTML=alignIcon(d); b.disabled=!on; b.onclick=()=>alignSel(k); g.append(b); }
+    s.append(g); if(note){ const t=document.createElement('div'); t.className='spnote'; t.textContent=note; s.append(t); } p.append(s); };
+  block('Align',['l','c','r','t','m','b'],n>=1, n===1?'One shape lines up with the rest of the design.':'Shapes line up with the edges or centers of the selection.');
+  block('Distribute',['dh','dv'],n>=3, n<3?'Select 3 or more shapes to space them evenly.':'Even spacing between the shapes.');
 }
 $('alignbtn').innerHTML=alignIcon(ALIGN[0][2]);
 $('alignbtn').addEventListener('click',e=>{ e.stopPropagation(); const p=$('colorpop'); if(!p.hidden && p.dataset.kind==='align'){ closeStylePop(); return; }
-  renderAlignPop(); p.hidden=false; const r=$('alignbtn').getBoundingClientRect(); p.style.transform=''; p.style.left=Math.max(8,Math.min(r.left+scrollX, scrollX+innerWidth-p.offsetWidth-8))+'px'; p.style.top=(r.bottom+scrollY+6)+'px'; $('alignbtn').setAttribute('aria-expanded','true'); });
+  renderAlignPop(); p.hidden=false; placePop(p,$('alignbtn')); $('alignbtn').setAttribute('aria-expanded','true'); });
 // arrow keys nudge the selection 1 mm (10 mm with Shift); a run of presses is one Undo
 let nudgeT=0;
 document.addEventListener('keydown',e=>{
@@ -3194,11 +3254,22 @@ function setOutline(on){
   const hs=[...sel.keys].map(hitByKey).filter(Boolean); if(!hs.length) return;
   commit(()=>{ for(const h of hs){ if(on) state.lineOff.delete(h.key); else state.lineOff.add(h.key); } update(); syncSelBar(); });
 }
+function selScreenBox(){ const v=state.view, hs=[...sel.keys].map(hitByKey).filter(Boolean); if(!v||!hs.length) return null; const r=$('cv').getBoundingClientRect();
+  let l=Infinity,t=Infinity,rr=-Infinity,b=-Infinity; for(const h of hs){ const x0=r.left+v.ox+(h.bb.x0-v.x0)*v.sc, x1=r.left+v.ox+(h.bb.x1-v.x0)*v.sc, y0=r.top+v.oy-(h.bb.y1-v.y0)*v.sc, y1=r.top+v.oy-(h.bb.y0-v.y0)*v.sc; l=Math.min(l,x0); rr=Math.max(rr,x1); t=Math.min(t,y0); b=Math.max(b,y1); }
+  return {l:l-6,r:rr+6,t:t-6,b:b+6}; }
+function placePop(p,btn){
+  const sheet=matchMedia('(max-width:600px)').matches; p.classList.toggle('sheet',sheet); p.style.transform='';
+  if(sheet){ p.style.left=''; p.style.top=''; return; }
+  const r=btn.getBoundingClientRect(), w=p.offsetWidth, hh=p.offsetHeight, top=r.bottom+6;
+  let left=Math.max(8,Math.min(r.left, innerWidth-w-8));
+  const sb=selScreenBox();
+  if(sb){ const ov=L=>Math.max(0,Math.min(L+w,sb.r)-Math.max(L,sb.l))*Math.max(0,Math.min(top+hh,sb.b)-Math.max(top,sb.t));
+    if(ov(left)>0){ const c=$('cv').getBoundingClientRect(); let best=left, bo=ov(left);
+      for(const L of [c.right-w-10, c.left+10, sb.r+12, sb.l-w-12]){ const x=Math.max(8,Math.min(L,innerWidth-w-8)), o=ov(x); if(o<bo-1){ bo=o; best=x; } } left=best; } }
+  p.style.left=(left+scrollX)+'px'; p.style.top=(top+scrollY)+'px';
+}
 function openStylePop(btn,kind){
-  const p=$('colorpop'); renderStylePop(kind); p.hidden=false; btn.setAttribute('aria-expanded','true');
-  const vv=window.visualViewport, s=vv?vv.scale:1, L=vv?vv.pageLeft:scrollX, VW=vv?vv.width:innerWidth, r=btn.getBoundingClientRect();
-  p.style.transform=s!==1?'scale('+(1/s)+')':'';
-  p.style.left=Math.max(L+8/s, Math.min(r.left+scrollX, L+VW-p.offsetWidth/s-8/s))+'px'; p.style.top=(r.bottom+scrollY+6/s)+'px';
+  const p=$('colorpop'); renderStylePop(kind); p.hidden=false; btn.setAttribute('aria-expanded','true'); placePop(p,btn);
 }
 function closeStylePop(){ const p=$('colorpop'); if(!p.hidden){ p.hidden=true; FRHOLD.append(FILLROWS); delete p.dataset.kind; } ['fillbtn','linebtn','alignbtn'].forEach(id=>$(id).setAttribute('aria-expanded','false')); }
 for(const [id,kind] of [['fillbtn','fill'],['linebtn','line']]) $(id).addEventListener('click',e=>{ e.stopPropagation(); const p=$('colorpop'); if(!p.hidden && p.dataset.kind===kind){ closeStylePop(); return; } openStylePop($(id),kind); });
@@ -3241,14 +3312,14 @@ function openShapeMenu(ev){
     closeShapeMenu();
     const h=shapeAt(ev); sel.down={x:ev.clientX,y:ev.clientY,h,shift:ev.shiftKey,box:ev.metaKey||ev.ctrlKey,type:ev.pointerType,at:mmAt(ev),moved:false};
     // pressing on a shape gets it ready to drag: it joins (or becomes) the selection
-    if(h && !sel.down.box && (ev.pointerType!=='touch' || sel.keys.has(h.key))) sel.down.drag=true;
+    if(h && !sel.down.box && sel.keys.has(h.key)) sel.down.drag=true;
     if(ev.pointerType==='touch' && h){ clearTimeout(sel.lp); sel.lp=setTimeout(()=>{ if(sel.down && !sel.down.moved){ toggleSel(h.key); sel.swallow=true; if(navigator.vibrate) navigator.vibrate(10); } },480); }
     if(ev.pointerType!=='touch'){ cv.setPointerCapture(ev.pointerId); }
   });
   cv.addEventListener('pointermove',ev=>{
     const d=sel.down;
     if(d){ if(Math.hypot(ev.clientX-d.x,ev.clientY-d.y)>4) d.moved=true;
-      if(d.moved && d.drag){ if(!sel.keys.has(d.h.key)) setSel(d.shift?[...sel.keys,d.h.key]:[d.h.key]); let dx=ev.clientX-d.x, dy=ev.clientY-d.y; if(ev.shiftKey){ if(Math.abs(dx)>Math.abs(dy)) dy=0; else dx=0; } sel.mv={dx,dy}; cv.style.cursor='grabbing'; draw(); return; }
+      if(d.moved && d.drag){ if(!sel.keys.has(d.h.key)) setSel(d.shift?[...sel.keys,d.h.key]:[d.h.key]); let dx=ev.clientX-d.x, dy=ev.clientY-d.y; if(ev.shiftKey){ if(Math.abs(dx)>Math.abs(dy)) dy=0; else dx=0; } sel.mv={dx,dy}; liveMove(d,dx,dy); cv.style.cursor='grabbing'; draw(); return; }
       if(d.moved && d.type!=='touch'){ const p=mmAt(ev); sel.box={x0:Math.min(d.at[0],p[0]),x1:Math.max(d.at[0],p[0]),y0:Math.min(d.at[1],p[1]),y1:Math.max(d.at[1],p[1])};
         const hits=shapesInBox(sel.box).map(h=>h.key); sel.boxHits=new Set(d.shift?[...sel.keys,...hits]:hits); draw(); }
       return; }
@@ -3260,11 +3331,11 @@ function openShapeMenu(ev){
   });
   const end=ev=>{
     clearTimeout(sel.lp); const d=sel.down; sel.down=null; if(!d) return;
-    if(sel.mv){ const v=state.view, m=sel.mv; sel.mv=null; sel.swallow=true; cv.style.cursor=''; if(v && (m.dx||m.dy)) moveSelection(m.dx/v.sc,-m.dy/v.sc,false); else draw(); return; }
+    if(sel.mv){ sel.mv=null; sel.swallow=true; cv.style.cursor=''; if(d.live){ cancelAnimationFrame(d.live.raf); applyLive(d); update(); syncSelBar(); } else draw(); return; }
     if(sel.box){ const hits=shapesInBox(sel.box).map(h=>h.key); sel.box=null; sel.boxHits=null; sel.swallow=true;
       setSel(d.shift?[...new Set([...sel.keys,...hits])]:hits); }
   };
-  cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',ev=>{ clearTimeout(sel.lp); sel.down=null; if(sel.mv){ sel.mv=null; draw(); } if(sel.box){ sel.box=null; sel.boxHits=null; draw(); } });
+  cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',ev=>{ clearTimeout(sel.lp); const d=sel.down; sel.down=null; if(sel.mv){ sel.mv=null; if(d&&d.live){ cancelAnimationFrame(d.live.raf); state.moves=d.live.base; sel.undo.pop(); update(); } else draw(); } if(sel.box){ sel.box=null; sel.boxHits=null; draw(); } });
   cv.addEventListener('pointerleave',()=>{ if(sel.hover){ sel.hover=null; draw(); } });
   cv.addEventListener('click',ev=>{
     if(sel.swallow){ sel.swallow=false; return; }
