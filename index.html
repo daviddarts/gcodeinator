@@ -152,6 +152,9 @@ aside .modesw{display:grid;grid-template-columns:1fr 1fr;width:100%;margin:0 0 1
 .mattools .histgrp svg{width:20px;height:20px}
 .mattools .histgrp .tog:disabled{opacity:.4;cursor:default}
 .mattools .tbreak{flex-basis:100%;height:0}
+.sizepanel{display:contents}
+#sizebtn{display:none}
+.zeronote .zs{display:none}
 .appfoot{display:flex;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;max-width:1400px;margin:0 auto;padding:4px 24px 28px;color:var(--muted);font-size:.86rem}
 .appfoot #aboutbtn{width:auto;height:auto;border-radius:0;display:inline-block;padding:4px 2px}
 .appfoot .footlink{white-space:nowrap;width:auto;background:none;border:0;padding:4px 2px;box-shadow:none;color:var(--muted);font:inherit;font-weight:500;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
@@ -285,6 +288,44 @@ html{touch-action:pan-x pan-y}
 .cpchip{width:22px;height:22px;padding:0;border-radius:50%;border:1px solid var(--line);box-shadow:none;cursor:pointer}
 .cpchip.on{outline:2px solid var(--ink);outline-offset:2px}
 .cpcustom{display:inline-flex}.cpcustom input{width:24px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;background:none;cursor:pointer}
+/* phones: one toolbar row; size and position live behind a button */
+@media (max-width:600px){
+  .mattools{flex-wrap:nowrap;gap:5px;padding:0 0 8px}
+  .mattools .tbreak{display:none}
+  .osvg{display:none}
+  .mattools .openbtn{padding-left:14px!important;padding-right:14px!important}
+  #sizebtn{display:inline-flex;align-items:center;justify-content:center}
+  #sizebtn svg{width:20px;height:20px}
+  #sizebtn[aria-expanded="true"]{background:rgba(255,255,255,.16)}
+  .mattools.nofile #sizebtn{opacity:.4;pointer-events:none}
+  .sizepanel{display:none;position:absolute;z-index:30;top:52px;right:8px;flex-direction:column;align-items:stretch;gap:12px;padding:12px;border-radius:12px;border:2px solid var(--ol);background:var(--mat);box-shadow:0 4px 0 var(--ol)}
+  .sizepanel.open{display:flex}
+  .sizepanel .tgrp{order:0!important;margin:0!important;gap:6px}
+  .sizepanel .tgrp:has(#mirror){gap:8px}
+  .sizepanel label{width:14px;text-align:right}
+  .mattools .sizepanel .num,.mattools .sizepanel #posgrp .num{width:96px}
+  .mattools .sizepanel input[type=number]{height:36px;font-size:16px}
+  .sizepanel .times{display:none}
+  .zeronote{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 20px);white-space:nowrap;gap:6px;padding:3px 3px 3px 7px;border-radius:999px;font-size:.8rem;box-shadow:0 2px 0 var(--ol)}
+  .zeronote .zl{display:none}.zeronote .zs{display:inline;flex:none}
+  .zeronote svg{width:16px;height:16px}
+  .zeronote button{padding:3px 9px;border-radius:999px;font-size:.78rem}
+  .selbar{flex-wrap:nowrap;gap:1px;padding:2px 3px;border-radius:10px;max-width:calc(100% - 16px);box-shadow:0 3px 0 var(--ol)}
+  .selbar button{height:30px;min-width:30px;padding:0 4px}
+  .selbar .stylebtn{gap:2px;padding:0 3px}
+  .selbar .selgrp{gap:1px;padding-left:2px}
+  .selbar .selx{margin-left:0}
+  .selbar svg,.selbar .stylebtn .sw svg{width:19px;height:19px}
+  .colorpop.sheet{max-height:40vh;padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+  .colorpop.sheet .splbl,.colorpop.sheet .spnote{display:none}
+  .colorpop.sheet .spsec{margin:0 0 10px}
+  .colorpop.sheet .spseg button{gap:1px;padding:4px 2px 3px;font-size:.72rem;white-space:nowrap}
+  .colorpop.sheet .spseg button svg{width:20px;height:20px}
+  canvas#cv{height:62vh;height:max(300px,calc(100svh - 225px))}
+  .colorpop.sheet .cpchips{display:flex;gap:8px;overflow-x:auto;padding:3px 2px 4px;scrollbar-width:none}
+  .colorpop.sheet .cpchips > *{flex:none}
+  .colorpop.sheet .cpchip{width:28px;height:28px}
+}
 @media (max-width:480px){.selbar button > span:not(.sw){display:none}.selbar .selcount{min-width:0}.selbar .wslot,#hidebtn{min-width:0}}
 .shapemenu button{display:flex;align-items:center;gap:8px;text-align:left;padding:5px 8px;border:0;border-radius:6px;background:transparent;color:var(--ink);font-weight:500;font-size:.88rem}
 .shapemenu button svg{width:18px;height:18px;flex:none}
@@ -673,11 +714,13 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   <div class="matbox">
     <div class="mattools" id="mattools">
       <input type="file" id="file" accept=".svg,image/svg+xml" hidden>
-      <button type="button" class="openbtn" id="openbtn">Open SVG</button>
+      <button type="button" class="openbtn" id="openbtn">Open<span class="osvg"> SVG</span></button>
       <span class="smenu"><button type="button" class="samplebtn" id="samplebtn" aria-haspopup="menu" aria-expanded="false">Samples<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="smenu-list" id="samplemenu" role="menu" hidden><button type="button" role="menuitem" data-s="hello">Hello, world. text</button><button type="button" role="menuitem" data-s="pen">Pen drawing</button><button type="button" role="menuitem" data-s="knife">Drag Knife drawing</button><button type="button" role="menuitem" data-s="inator">Inator drawing</button></span></span>
       <button type="button" class="clearbtn" id="clearbtn" title="Remove the design from the mat" aria-label="Clear" disabled><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 20H20"/><path d="M4.6 15.4 14.2 5.8a2 2 0 0 1 2.8 0l3.2 3.2a2 2 0 0 1 0 2.8L12 20H8.6l-4-4a1.4 1.4 0 0 1 0-.6z"/><path d="M9.5 10.5l5 5"/></svg><span>Clear</span></button>
       <span class="tgrp histgrp" id="histgrp"><button type="button" class="tog" id="undobtn" disabled aria-label="Undo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9a5 5 0 0 1 0 10h-2"/></svg></button><button type="button" class="tog" id="redobtn" disabled aria-label="Redo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 7 4.5 4.5L15 16"/><path d="M19 11.5h-9a5 5 0 0 0 0 10h2"/></svg></button></span>
+      <button type="button" class="tog" id="sizebtn" aria-label="Size and position" title="Size and position" aria-haspopup="dialog" aria-expanded="false" aria-controls="sizepanel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4"/><path d="M9 15l6-6M11 9h4v4"/></svg></button>
       <span class="tbreak" aria-hidden="true"></span>
+      <div class="sizepanel" id="sizepanel" role="dialog" aria-label="Size and position">
       <span class="tgrp" id="posgrp" title="Where the design’s lower-left corner sits, measured from zero"><label for="posx">X</label><input type="number" id="posx" step="0.5" data-noupdate="1"><label for="posy">Y</label><input type="number" id="posy" step="0.5" data-noupdate="1"><span class="unit">mm</span></span>
       <span class="tgrp" id="r-size" hidden>
         <label for="dw">W</label><input type="number" id="dw" step="1" min="1" max="5000">
@@ -689,11 +732,12 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
         <input type="checkbox" id="mirror" class="vh"><label for="mirror" class="tog" title="Flip horizontal"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18" stroke-dasharray="2 2.6"/><path d="M9 6 3 18h6z"/><path d="M15 6l6 12h-6z"/></svg><span class="vh">Flip horizontal</span></label>
         <input type="hidden" id="rotate" value="0"><button type="button" class="tog rotbtn" id="rotbtn" title="Rotate 90° clockwise" aria-label="Rotate 90° clockwise"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="10" width="11" height="11" rx="1.5"/><path d="M10 3.5h3a7 7 0 0 1 7 7v2"/><path d="M17 10l3 3 3-3"/></svg><span class="rotdeg" id="rotdeg" aria-live="polite"></span></button>
       </span>
+      </div>
       <input type="hidden" id="margin"><input type="hidden" id="marginy">
     </div>
     <div class="matnotes"><span class="status" id="loaded"></span><div class="hint sizenote" id="sizenote" hidden>This SVG has no size in mm, so 1 unit is treated as 1 pixel (96 per inch).</div></div>
     <canvas id="cv" aria-label="Cut preview"></canvas>
-    <div class="zeronote" id="zeronote" role="alert" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 18.5 17h-17z" fill="#F2C230" stroke="#1E2522" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8v4.2" stroke="#1E2522" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.6" r="1" fill="#1E2522"/></svg><span>Part of the design is past zero, where the machine can’t go.</span><button type="button" id="zerofix">Move inside</button></div>
+    <div class="zeronote" id="zeronote" role="alert" hidden><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2.5 18.5 17h-17z" fill="#F2C230" stroke="#1E2522" stroke-width="1.4" stroke-linejoin="round"/><path d="M10 8v4.2" stroke="#1E2522" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="14.6" r="1" fill="#1E2522"/></svg><span class="zl">Part of the design is past zero, where the machine can’t go.</span><span class="zs">Past zero</span><button type="button" id="zerofix">Move inside</button></div>
     <div class="zoombar" id="zoombar" hidden><button type="button" id="zout" aria-label="Zoom out"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><button type="button" id="zpct" aria-label="Zoom to fit">100%</button><button type="button" id="zin" aria-label="Zoom in"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8h9M8 3.5v9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
     <div class="selbar" id="selbar" role="toolbar" aria-label="Selected shapes" hidden><span class="selgrp pen-only" id="barstyle"><button type="button" class="stylebtn" id="fillbtn" aria-haspopup="dialog" aria-expanded="false"><span class="sw" id="fillsw"></span><span class="stl">Fill</span><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="stylebtn" id="linebtn" aria-haspopup="dialog" aria-expanded="false"><span class="sw" id="linesw"></span><span class="stl">Outline</span><svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span><span class="selgrp"><button type="button" id="alignbtn" aria-label="Align" title="Align and distribute" aria-haspopup="dialog" aria-expanded="false"></button><span class="wslot"><button type="button" id="weldbtn" title="Weld: join the selected shapes into one"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 6.23A6.5 6.5 0 1 0 12 17.77 6.5 6.5 0 1 0 12 6.23Z" fill="currentColor" fill-opacity=".18"/></svg><span>Weld</span></button><button type="button" id="unweldbtn" hidden title="Unweld: split back into the original shapes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="7" cy="12" r="5"/><circle cx="17.5" cy="12" r="4.5"/></svg><span>Unweld</span></button></span><button type="button" id="hidebtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="eyeo"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="3"/></g><path class="eyex" d="M4 4l16 16"/></svg><span id="hidelbl">Hide</span></button></span><span class="selgrp"><button type="button" id="selallbtn" aria-label="Select All"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-dasharray="3 2.4" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="2"/></svg></button></span><button type="button" id="selclose" class="selx" aria-label="Deselect" title="Deselect (Esc)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>
     <div class="empty" id="empty"></div>
@@ -3022,6 +3066,15 @@ function panBy(px,py){ const v=state.view; if(!v||!state.job) return; if(vz.cx==
 function zoomFit(){ vz.k=1; vz.cx=null; vz.cy=null; afterZoom(); }
 function zoomStep(f){ const cv=$('cv'); zoomAt(cv.clientWidth/2,cv.clientHeight/2,f); }
 function afterZoom(){ if(vz.k===1 && vz.cx!==null){ const v=state.view; if(v && Math.abs(vz.cx-v.fcx)<1e-6 && Math.abs(vz.cy-v.fcy)<1e-6){ vz.cx=null; vz.cy=null; } } draw(); syncZoomUI(); try{ syncSelBar(); }catch(e){} }
+(function(){
+  const btn=$('sizebtn'), pan=$('sizepanel');
+  const show=on=>{ pan.classList.toggle('open',on); btn.setAttribute('aria-expanded',on); };
+  btn.addEventListener('click',e=>{ e.stopPropagation(); show(!pan.classList.contains('open')); });
+  document.addEventListener('pointerdown',e=>{ if(pan.classList.contains('open') && !pan.contains(e.target) && !btn.contains(e.target)) show(false); },true);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape' && pan.classList.contains('open')){ show(false); btn.focus(); } });
+  new MutationObserver(()=>{ if($('mattools').classList.contains('nofile')) show(false); }).observe($('mattools'),{attributes:true,attributeFilter:['class']});
+  matchMedia('(max-width:600px)').addEventListener('change',()=>show(false));
+})();
 function placeZeroNote(){ const z=$('zeronote'), cv=$('cv'); if(z && !z.hidden) z.style.top=(cv.offsetTop+cv.offsetHeight-z.offsetHeight-52)+'px'; }
 function syncZoomUI(){ placeZeroNote();
   const z=$('zoombar'), cv=$('cv'); if(!z) return;
