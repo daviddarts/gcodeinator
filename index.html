@@ -658,7 +658,9 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   .toolrail{grid-column:1;grid-row:1;align-self:start;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px}
   .wrap>main{grid-column:2;grid-row:1;min-height:0;display:flex;flex-direction:column}
   .rcol{grid-column:3;grid-row:1;position:relative;display:flex;min-height:0}
-  .rcol>aside{width:312px;min-height:0;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:14px;scrollbar-width:thin}
+  .rcol>aside{width:312px;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+  .rcol>aside::-webkit-scrollbar{width:6px}.rcol>aside::-webkit-scrollbar-track{background:transparent}.rcol>aside::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
+  .rcol>aside>*{flex:none;min-width:0}
   .rcol>.pfold{display:flex;position:absolute;left:-13px;top:50%;margin-top:-22px;z-index:5;width:24px;height:44px;padding:0;align-items:center;justify-content:center;border-radius:8px;background:var(--panel);border:1px solid var(--line);color:var(--muted);box-shadow:none}
   .rcol>.pfold:hover{color:var(--ink);transform:none;box-shadow:none}
   .rcol.folded>aside{display:none}.rcol.folded>.prail{display:flex}.rcol.folded>.pfold svg{transform:rotate(180deg)}
@@ -680,7 +682,8 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   #szslot .sizepanel{display:flex!important;flex-direction:column;gap:8px;position:static;padding:0;border:0;background:none;box-shadow:none}
   #szslot .tgrp{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;opacity:1!important;pointer-events:auto!important}
   #szslot label{width:14px;font-weight:600;color:var(--muted);text-align:right;flex:none}
-  #szslot .num{width:96px;flex:none}#szslot input[type=number]{height:32px;padding-right:28px}
+  #szslot .num{width:86px;flex:none}
+  #szslot #angrp #dsreset{margin-left:auto}#szslot input[type=number]{height:32px;padding-right:28px}
   #szslot .unit{color:var(--muted);font-size:.85rem}#szslot .times{display:none}
   #szslot .tog{width:34px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--ink);box-shadow:none}
   #szslot .tog:hover{transform:none;box-shadow:none;background:var(--line)}
@@ -746,12 +749,12 @@ dialog#about .sd-warn{margin:16px 0 0;padding:8px 12px;border-radius:7px;backgro
   .fontlist{min-width:210px}
   .fontlist button{min-height:38px}
   .fontlist .fname{display:flex;align-items:center}
-  .rcol .modesw button{gap:6px;padding:8px 6px;font-size:.98rem}.rcol .modesw .toolico{height:20px}
+  .rcol .modesw button{gap:5px;padding:8px 5px;font-size:.95rem}.rcol .modesw .toolico{height:16px}
   aside>.panel .btns{display:none}
   .rcol .matrow{grid-template-columns:auto minmax(0,1fr)}.rcol .matrow select{min-width:0;width:100%}
   @media (max-width:1180px){.abname{display:none}header .brand h1{font-size:2.3rem}header .logo{width:96px}}
-  aside>.panel .stats{grid-template-columns:repeat(3,auto);gap:10px 16px}
-  aside>.panel .stats b{font-size:1.05rem}
+  aside>.panel .stats{display:grid;grid-template-columns:repeat(3,max-content);justify-content:space-between;gap:6px 12px;margin-bottom:6px}
+  aside>.panel .stats b{font-size:.98rem;white-space:nowrap}aside>.panel .stats small{font-size:.74rem;line-height:1.2}
   #szslot .tgrp:has(#mirror){margin-top:2px}
 }
 </style>
@@ -3027,6 +3030,7 @@ function syncSelFields(){
   $('dsreset').disabled=!F.ks.some(k=>state.xf.has(k));
   $('dsreset').title=$('dsreset').ariaLabel=on?'Reset size and angle of the selection':'Reset to original size';
 }
+{ const g=$('angrp'), r=$('dsreset'); if(g && r) g.append(r); }
 $('dang').addEventListener('change',()=>{ const F=selFrame(), v=parseFloat($('dang').value); if(!F||!isFinite(v)) return;
   const cur=F.single?F.th*180/Math.PI:0, d=(v-cur)*Math.PI/180; if(Math.abs(d)<1e-9) return; xformSel(M2.rot(d),F.c,mergeEdit('dang')); if(!F.single) $('dang').value=''; });
 let angleTouched=false;
